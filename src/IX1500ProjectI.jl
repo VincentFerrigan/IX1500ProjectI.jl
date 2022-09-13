@@ -48,11 +48,10 @@ struct Hand
 end
 
 # utils
+
 function fulldeck() 
-    return Shuffle!(Card[Card(rank, suit) for s in SUITS for r in RANKS])
+    return Card[Card(rank, suit) for suit in SUITS for rank in RANKS]
 end
-
-
 
 getsuit(card::Card) = card.suit
 getrank(card::Card) = card.rank
