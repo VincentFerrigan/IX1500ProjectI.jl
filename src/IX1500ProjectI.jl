@@ -1,6 +1,10 @@
 module IX1500ProjectI
 import Base.show
 
+export Card, Deck, Hand, fulldeck, getsuit, getcolor, getrank
+
+
+
 # constants
 const RANKS = Set([:ace, :two, :three, :four, :five, :six, :seven, :eight,
                 :nine, :ten, :jack, :queen, :king])
@@ -12,11 +16,15 @@ struct Card
     suit::Symbol
     function Card(r::Symbol, s::Symbol)
 	    # short-circuit conditionals.
-		r in RANKS || throw(ArgumentError("invalid rank: $r"))
-	    s in SUITS || throw(ArgumentError("invalid suit: $s"))
+        r in RANKS || throw(ArgumentError("invalid rank: $r"))
+        s in SUITS || throw(ArgumentError("invalid suit: $s"))
 	    new(r, s)
 	end
 end
+
+# caVrd = Card(:ace, :♡)
+# show(card)
+# println(card)
 
 struct Deck
     cards::Vector{Card}
@@ -41,7 +49,7 @@ end
 
 # utils
 function fulldeck() 
-    return Shuffle!(Card[Card(rank, suit) for s in SUITS for rank in RANKS])
+    return Shuffle!(Card[Card(rank, suit) for s in SUITS for r in RANKS])
 end
 
 
@@ -49,7 +57,7 @@ end
 getsuit(card::Card) = card.suit
 getrank(card::Card) = card.rank
 function getcolor(card::Card)
-    if card.suit == ♣ || card.suit == ♠
+    if card.suit == ♣  ||  card.suit == ♠
         return :black
     else
         return :red
