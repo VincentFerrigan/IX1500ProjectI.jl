@@ -22,8 +22,8 @@ md"
     Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
     Date: 2022-09-13
     Version: 0.1
-    Vincent Ferrigan, ferrigan@kth.se
-    Name 2, name2@kth.se
+    V. Ferrigan, ferrigan@kth.se
+    M. Mellqvist Ekberg, martme@kth.se
 "
 
 # ╔═╡ d34338c7-b02d-4290-b3e4-212373278cb1
