@@ -1,0 +1,13 @@
+name = "IX1500ProjectI"
+uuid = "6a2531ba-7731-448a-a8ea-3e3a9a9fa40b"
+authors = ["Ferrigan, V.", "Mellqvist Ekberg, M"]
+version = "0.1.0"
+
+[compat]
+julia = "1.8"
+
+[extras]
+Test = "8dfed614-e22c-5e08-85e1-65c5234f0b40"
+
+[targets]
+test = ["Test"]
