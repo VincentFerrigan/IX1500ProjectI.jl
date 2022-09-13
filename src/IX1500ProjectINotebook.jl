@@ -50,6 +50,9 @@ md"
 ### Poker
 * [Hand rankings](https://www.pokerstars.se/en/poker/games/rules/hand-rankings/)
 * [Texas hold'em](https://www.pokerstars.se/en/poker/games/texas-holdem/)
+
+### Birthday Paradox
+* [Understanding the Birthday Paradox](https://betterexplained.com/articles/understanding-the-birthday-paradox/)
 "
 
 # ╔═╡ d14e9714-3365-11ed-1125-7be966581a61
@@ -60,7 +63,7 @@ md"
     Date: 2022-09-13
     Version: 0.1
     Vincent Ferrigan, ferrigan@kth.se
-    Name 2, name2@kth.se
+    Martin Mellqvist Ekberg, martme@kth.se
 "
 
 # ╔═╡ d34338c7-b02d-4290-b3e4-212373278cb1
@@ -69,7 +72,7 @@ md"
 # ╔═╡ fa06cb75-cef4-48c7-a920-27be6d51f7af
 md"
 ## Task A
-### Summery
+### Summary
 #### Task
 In the Texas hold 'em poker game every player gets just two cards (hole cards),
 while the best hand is determined by the combination of any five cards chosen
@@ -136,7 +139,7 @@ end
 # ╔═╡ dd33dca5-d435-41bc-afa8-b8d393aed7cd
 md"
 ## Task A
-### Summery
+### Summary
 #### Task
 The birthday paradox is that the probability of two persons sharing the same birthday in a
 group, exceeds 50%, when the group consists of only 23 people.
