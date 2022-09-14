@@ -20,13 +20,19 @@ function simulate_bpdx(n, k)
 end
 
 function find_duplicate(a)
-    key = 1
     for i in eachindex(a)
-        if a[key] == a[i+1]
-            return true
+        for j in eachindex(a)
+            k = i + 1
+            if !(k >= length(a)) && a[i] == a[k]
+                return true
+            end
         end
-        key +=1
     end   
+    return false
 end
+
+A = [1, 2, 3, 4, 7, 8]
+
+println(find_duplicate(A))
 
 end #module end
