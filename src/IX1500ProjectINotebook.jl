@@ -4,6 +4,16 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ 3c889854-4e74-4136-aa45-0a3c7430df61
 # Packages
 begin
@@ -116,13 +126,25 @@ group, exceeds 50%, when the group consists of only 23 people.
 * Simulate the birthday paradox repeatedly and calculate the average probability for different values of N . Draw graphs and compare to the calculated versions above. Conclusions?
 "
 
+# ╔═╡ 7486b260-47f7-49be-a36e-0c1fd3e17da5
+#Sorry for the junk code below, just testing stuff
+
+# ╔═╡ 8a487347-33a8-4e82-97c9-34df569f68ea
+@bind x Slider(1:25)
+
+# ╔═╡ 7cc42621-0e05-4124-a850-b94ee1faee52
+
+
 # ╔═╡ b7fc9f8a-7493-4587-8e6e-849efb54bad3
-N = 1:23
+N = 1:x
 
 # ╔═╡ fc5c1176-b0ab-47d0-b802-fe2b9cdb146d
-prob = Vector{Float64}(1:23)
+prob = Vector{Float64}(1:x)
 
-# ╔═╡ 357b81f3-9535-4d2a-8e91-0424a829a4d3
+# ╔═╡ 29b0ef36-c28a-4f43-8f74-24ddac1e5410
+for n in eachindex(prob)
+	prob[n]= n^2+x+5
+end
 
 # ╔═╡ 2c9e488a-7f64-46dc-84f8-41f24c9c9762
 plot(N, prob)
@@ -131,6 +153,8 @@ plot(N, prob)
 md"
 #### Result
 
+(Everything is preliminary sketch and test)
+
 To begin with we have to make a few assumptions:
 
 1. There are always 365 days in a year (i.e. we ignore leap years)
@@ -138,9 +162,7 @@ To begin with we have to make a few assumptions:
 3. There are no dependencies between birthdays (we discount twin, triplets etc)
 4. The set of people $N$ is completely random
 
-Given these assumptions, the probability of two people sharing a birthday is:
 
-$P(N) = {1\over 365}\approx 0.0027$
 
 However we're interested in the case where there is more than a single comparison, i e when $N>2$. Thus we want the number of possible birthdays and for a given $N$, the number of possible permutations where 
 
@@ -151,6 +173,13 @@ $B = {365^N}$
 ${A\over B} \approx 0.4927$
 
 $1-{A\over B} \approx 0.5073$
+
+#### Simulation
+
+For the simulation we assign random numbers $(1, 365)$ to a vector of length $N$. We then check for duplicates. We have two counters $amount$ and $hit$ initialized to $0$. If we find a duplicate we iterate both counters, if we don't we only iterate the $amount$ counter. We run this entire process $k$ times, where $k=placeholder$. When we have run this we can divide the number of $hits$ by $amount$ to get the actual probability.
+
+$P(N)={hits\over amount}$
+
 "
 
 # ╔═╡ 0f36b297-a4fa-479d-86d3-2d74a2bb1063
@@ -180,7 +209,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.0"
 manifest_format = "2.0"
-project_hash = "5ed6b0828ff0f1bcb3462cce49297ecb276bd0f6"
+project_hash = "0300c7d5a0356e63b436f1570cb333a7e42e3986"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1124,9 +1153,12 @@ version = "1.4.1+0"
 # ╟─8118483c-5b54-4fc2-8825-17f2022b4316
 # ╟─d95bed62-ed09-4fb8-9401-f8d39300ac19
 # ╠═dd33dca5-d435-41bc-afa8-b8d393aed7cd
+# ╠═7486b260-47f7-49be-a36e-0c1fd3e17da5
+# ╠═8a487347-33a8-4e82-97c9-34df569f68ea
+# ╠═7cc42621-0e05-4124-a850-b94ee1faee52
 # ╠═b7fc9f8a-7493-4587-8e6e-849efb54bad3
 # ╠═fc5c1176-b0ab-47d0-b802-fe2b9cdb146d
-# ╠═357b81f3-9535-4d2a-8e91-0424a829a4d3
+# ╠═29b0ef36-c28a-4f43-8f74-24ddac1e5410
 # ╠═2c9e488a-7f64-46dc-84f8-41f24c9c9762
 # ╠═ace97548-f911-4727-8318-79aac3e1ef0d
 # ╠═0f36b297-a4fa-479d-86d3-2d74a2bb1063
