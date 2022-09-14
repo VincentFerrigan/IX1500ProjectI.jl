@@ -22,6 +22,9 @@
 - Draw graphs.
 - Compute actual probabilities for a range of *N*, graph and compare to calculated probabilities.
 
+### Other
+- Has all the "project stuff" been removed from the notebook?
+
 ## Info & tutorials
 
 ### Regular Expressions in Julia
