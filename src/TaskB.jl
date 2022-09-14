@@ -31,8 +31,4 @@ function find_duplicate(a)
     return false
 end
 
-A = [1, 2, 3, 4, 7, 8]
-
-println(find_duplicate(A))
-
 end #module end
