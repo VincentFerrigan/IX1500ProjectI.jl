@@ -17,6 +17,7 @@ end
 
 # ╔═╡ 7d3d76b4-a16b-4f86-bb72-6e489edd243e
 
+
 # ╔═╡ d14e9714-3365-11ed-1125-7be966581a61
 md"
 # Report Project I
@@ -100,7 +101,7 @@ end
 
 # ╔═╡ dd33dca5-d435-41bc-afa8-b8d393aed7cd
 md"
-## Task A
+## Task B
 ### Summary
 #### Task
 The birthday paradox is that the probability of two persons sharing the same birthday in a
@@ -114,18 +115,24 @@ group, exceeds 50%, when the group consists of only 23 people.
 * Simulate the birthday paradox repeatedly and calculate the average probability for different values of N . Draw graphs and compare to the calculated versions above. Conclusions?
 "
 
-# ╔═╡ c952bcf0-a966-44f5-8430-7edf28f7288b
+# ╔═╡ ace97548-f911-4727-8318-79aac3e1ef0d
 md"
 #### Result
+
+To begin with we have to make a few assumptions. Namely that we ignore leap years, that all birthdays are equally common and that we have no twins. We also do not account for any sort of selection bias and assume the *N* people compared have a truly random distribution of birthdays.
+
+Given these assumptions, the probability of two people sharing a birthday is:
+
+$$P(N) = {1\over 365}\approx 0.0027$$
 "
+
+# ╔═╡ 0f36b297-a4fa-479d-86d3-2d74a2bb1063
+1/365
 
 # ╔═╡ f57d4947-2829-4e82-b5c9-14e7c1fec8ac
 md"
 ### Code
 "
-
-# ╔═╡ d2941c1e-de80-47a1-b7ee-9db383cfecb5
-
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1083,8 +1090,8 @@ version = "1.4.1+0"
 # ╠═8118483c-5b54-4fc2-8825-17f2022b4316
 # ╠═d95bed62-ed09-4fb8-9401-f8d39300ac19
 # ╠═dd33dca5-d435-41bc-afa8-b8d393aed7cd
-# ╠═c952bcf0-a966-44f5-8430-7edf28f7288b
+# ╠═ace97548-f911-4727-8318-79aac3e1ef0d
+# ╠═0f36b297-a4fa-479d-86d3-2d74a2bb1063
 # ╠═f57d4947-2829-4e82-b5c9-14e7c1fec8ac
-# ╠═d2941c1e-de80-47a1-b7ee-9db383cfecb5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

@@ -12,7 +12,7 @@
 ### Task A
 
 ### Task B
-- What assumptions are we making?
+- ~~What assumptions are we making?~~
 - Find a formula that gives the solution of ~50% for the specific problem of N=23
 - Generalize for N.
 - Solve N=40
