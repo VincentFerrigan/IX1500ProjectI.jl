@@ -2,6 +2,7 @@
 
 module TaskB
 
+#unfinished method
 function simulate_bpdx(n, k)
     for i in 1:k
         hit = 0
@@ -19,6 +20,7 @@ function simulate_bpdx(n, k)
     end
 end
 
+#unfininished method
 function find_duplicate(a)
     key = 1
     for i in eachindex(a)
