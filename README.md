@@ -7,7 +7,7 @@
 *Well, just use Markdown with md\" ...\"*
 
 - How do I add mathematical nonation?
-*Use LaTeX notation. $$a = x /over 1$$*
+*Use LaTeX notation. Ex: $${a = x /over 1}$$*
 
 - How do I add keybindings?
 - How do I spellcheck with LT?
