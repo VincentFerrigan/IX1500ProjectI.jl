@@ -16,12 +16,11 @@
 
 ### Task B
 - ~~What assumptions are we making?~~
-- Find a formula that gives the solution of ~50% for the specific problem of N=23
-- Generalize for N.
+- Implement a formula that calculates the probability of
 - Solve N=40
 - Compare to single comparision with N people.
 - Draw graphs.
-- Compute average probability.
+- Compute actual probabilities for a range of *N*, graph and compare to calculated probabilities.
 
 ## Info & tutorials
 

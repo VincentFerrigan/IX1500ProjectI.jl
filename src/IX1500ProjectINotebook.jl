@@ -174,11 +174,15 @@ ${A\over B} \approx 0.4927$
 
 $1-{A\over B} \approx 0.5073$
 
-#### Simulation
+##### Simulation
 
 For the simulation we assign random numbers $(1, 365)$ to a vector of length $N$. We then check for duplicates. We have two counters $amount$ and $hit$ initialized to $0$. If we find a duplicate we iterate both counters, if we don't we only iterate the $amount$ counter. We run this entire process $k$ times, where $k=placeholder$. When we have run this we can divide the number of $hits$ by $amount$ to get the actual probability.
 
 $P(N)={hits\over amount}$
+
+For high enough values of $k$ this should start to approximated the calculated probability.
+
+As can be seen in the graph below:
 
 "
 
@@ -187,7 +191,7 @@ $P(N)={hits\over amount}$
 
 # ╔═╡ f57d4947-2829-4e82-b5c9-14e7c1fec8ac
 md"
-### Code
+## Code
 "
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
