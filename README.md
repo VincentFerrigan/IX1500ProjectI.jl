@@ -9,6 +9,17 @@
 - How do I add keybindings?
 - How do I spellcheck with LT?
 
+### Task A
+
+### Task B
+-What assumptions are we making?
+-Find a formula that gives the solution of ~50% for the specific problem of N=23
+-Generalize for N.
+-Solve N=40
+-Compare to single comparision with N people.
+-Draw graphs.
+-Compute average probability.
+
 ## Info & tutorials
 
 ### Regular Expressions in Julia
