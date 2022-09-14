@@ -124,6 +124,8 @@ To begin with we have to make a few assumptions. Namely that we ignore leap year
 Given these assumptions, the probability of two people sharing a birthday is:
 
 $$P(N) = {1\over 365}\approx 0.0027$$
+
+In the case of a number *N* people in a room we have two possible outcomes. Outcome **A** where there is a match and outcome **B** where there isn't one.
 "
 
 # ╔═╡ 0f36b297-a4fa-479d-86d3-2d74a2bb1063
