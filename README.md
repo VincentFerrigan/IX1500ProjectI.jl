@@ -6,6 +6,7 @@
 - How do I add non-code? 
 *Well, just use Markdown with md\" ...\"*
 
+- How do I add mathematical nonation?
 - How do I add keybindings?
 - How do I spellcheck with LT?
 
