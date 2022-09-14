@@ -10,6 +10,7 @@ begin
 	#using InteractiveUtils
 	using PlutoUI
 	using Plots
+	using Combinatorics
 end
 
 # ╔═╡ 44fd5f71-c347-4754-a50b-09f43b615e47
@@ -115,17 +116,41 @@ group, exceeds 50%, when the group consists of only 23 people.
 * Simulate the birthday paradox repeatedly and calculate the average probability for different values of N . Draw graphs and compare to the calculated versions above. Conclusions?
 "
 
+# ╔═╡ b7fc9f8a-7493-4587-8e6e-849efb54bad3
+N = 1:23
+
+# ╔═╡ fc5c1176-b0ab-47d0-b802-fe2b9cdb146d
+prob = Vector{Float64}(1:23)
+
+# ╔═╡ 357b81f3-9535-4d2a-8e91-0424a829a4d3
+
+# ╔═╡ 2c9e488a-7f64-46dc-84f8-41f24c9c9762
+plot(N, prob)
+
 # ╔═╡ ace97548-f911-4727-8318-79aac3e1ef0d
 md"
 #### Result
 
-To begin with we have to make a few assumptions. Namely that we ignore leap years, that all birthdays are equally common and that we have no twins. We also do not account for any sort of selection bias and assume the *N* people compared have a truly random distribution of birthdays.
+To begin with we have to make a few assumptions:
+
+1. There are always 365 days in a year (i.e. we ignore leap years)
+2. Every birthday is equally likely
+3. There are no dependencies between birthdays (we discount twin, triplets etc)
+4. The set of people $N$ is completely random
 
 Given these assumptions, the probability of two people sharing a birthday is:
 
-$$P(N) = {1\over 365}\approx 0.0027$$
+$P(N) = {1\over 365}\approx 0.0027$
 
-In the case of a number *N* people in a room we have two possible outcomes. Outcome **A** where there is a match and outcome **B** where there isn't one.
+However we're interested in the case where there is more than a single comparison, i e when $N>2$. Thus we want the number of possible birthdays and for a given $N$, the number of possible permutations where 
+
+$A = {365!\over (365-N)!}$
+
+$B = {365^N}$
+
+${A\over B} \approx 0.4927$
+
+$1-{A\over B} \approx 0.5073$
 "
 
 # ╔═╡ 0f36b297-a4fa-479d-86d3-2d74a2bb1063
@@ -139,10 +164,12 @@ md"
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
+Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
+Combinatorics = "~1.0.2"
 Plots = "~1.33.0"
 PlutoUI = "~0.7.40"
 """
@@ -153,7 +180,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.0"
 manifest_format = "2.0"
-project_hash = "f66a3fc6c5d7bdfa7b856f9ef90e1b0097161878"
+project_hash = "5ed6b0828ff0f1bcb3462cce49297ecb276bd0f6"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -224,6 +251,11 @@ deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
 git-tree-sha1 = "417b0ed7b8b838aa6ca0a87aadf1bb9eb111ce40"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.12.8"
+
+[[deps.Combinatorics]]
+git-tree-sha1 = "08c8b6831dc00bfea825826be0bc8336fc369860"
+uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
+version = "1.0.2"
 
 [[deps.Compat]]
 deps = ["Dates", "LinearAlgebra", "UUIDs"]
@@ -1083,15 +1115,19 @@ version = "1.4.1+0"
 # ╠═44fd5f71-c347-4754-a50b-09f43b615e47
 # ╠═3c889854-4e74-4136-aa45-0a3c7430df61
 # ╠═7d3d76b4-a16b-4f86-bb72-6e489edd243e
-# ╠═d14e9714-3365-11ed-1125-7be966581a61
+# ╟─d14e9714-3365-11ed-1125-7be966581a61
 # ╠═d34338c7-b02d-4290-b3e4-212373278cb1
-# ╠═fa06cb75-cef4-48c7-a920-27be6d51f7af
-# ╠═42e9660c-dbda-4bd1-8146-d2e88a8d374a
-# ╠═8b8284ba-6e95-4947-a8bc-09ed5046c0f8
+# ╟─fa06cb75-cef4-48c7-a920-27be6d51f7af
+# ╟─42e9660c-dbda-4bd1-8146-d2e88a8d374a
+# ╟─8b8284ba-6e95-4947-a8bc-09ed5046c0f8
 # ╠═67e3c538-0330-461b-abfd-3271d13cf4fc
-# ╠═8118483c-5b54-4fc2-8825-17f2022b4316
-# ╠═d95bed62-ed09-4fb8-9401-f8d39300ac19
+# ╟─8118483c-5b54-4fc2-8825-17f2022b4316
+# ╟─d95bed62-ed09-4fb8-9401-f8d39300ac19
 # ╠═dd33dca5-d435-41bc-afa8-b8d393aed7cd
+# ╠═b7fc9f8a-7493-4587-8e6e-849efb54bad3
+# ╠═fc5c1176-b0ab-47d0-b802-fe2b9cdb146d
+# ╠═357b81f3-9535-4d2a-8e91-0424a829a4d3
+# ╠═2c9e488a-7f64-46dc-84f8-41f24c9c9762
 # ╠═ace97548-f911-4727-8318-79aac3e1ef0d
 # ╠═0f36b297-a4fa-479d-86d3-2d74a2bb1063
 # ╠═f57d4947-2829-4e82-b5c9-14e7c1fec8ac
