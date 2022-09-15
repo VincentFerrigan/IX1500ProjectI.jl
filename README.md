@@ -41,6 +41,7 @@
 * [Combinatorics](https://juliamath.github.io/Combinatorics.jl/dev/)
 * [Julia Language Database JuliaDB - YouTube](https://www.youtube.com/watch?v=pv5zfIs2lyU&list=PLsu0TcgLDUiLfwJipaXOBRqwqZlT4Atfk)
 * [Julia for simple medical statistical analysis](https://www.youtube.com/watch?v=4nPmKG_f8-M&list=PLsu0TcgLDUiIznEhN165XmykqyLgzwY0Y)
+* [Blog-post: Beautiful julia](http://blog.translusion.com/posts/beautiful-julia/)
 
 ### Markdown
 * [markdown guide](https://www.markdownguide.org/)
