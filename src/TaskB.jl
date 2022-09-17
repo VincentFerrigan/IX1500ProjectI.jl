@@ -11,9 +11,9 @@ end
 
 
 function simulate_bpdx(n, k)
+    hit = 0
+    counter = 0
     for i in 1:k
-        hit = 0
-        counter = 0
         a = Vector{Int64}(undef, n)
         for j in eachindex(a)
             a[j] = rand(1:365)
@@ -25,6 +25,8 @@ function simulate_bpdx(n, k)
             counter += 1
         end
     end
+    prob = hit/counter
+    return prob
 end
 
 function find_duplicate(a)
@@ -38,5 +40,9 @@ function find_duplicate(a)
     end   
     return false
 end
+
+q = simulate_bpdx(23, 1000000)
+
+println(q)
 
 end #module end

@@ -309,7 +309,7 @@ for n in eachindex(pdx)
 end
 
 # ╔═╡ 2cec7825-a990-4c6e-ac52-15bf19e695b3
-plot(pdx, legend=false, xlabel="year", ylabel="apples")
+plot(pdx, legend=false, xlabel="N", ylabel="Probability")
 
 # ╔═╡ 835cf573-edc9-4abe-bb79-7d18fe262279
 md"
@@ -320,9 +320,10 @@ For the simulation we assign random numbers $(1, 365)$ to a vector of length $N$
 $P(N)={hits\over amount}$
 
 For high enough values of $k$ this should start to approximated the calculated probability.
-
-As can be seen in the graph below:
 "
+
+# ╔═╡ 85dff4b3-1182-44ca-a7f3-e375355cafc4
+q = TaskB.simulate_bpdx(23, 100)
 
 # ╔═╡ f57d4947-2829-4e82-b5c9-14e7c1fec8ac
 md"
@@ -1327,7 +1328,8 @@ version = "1.4.1+0"
 # ╟─80931f68-5f56-4a05-b453-8a36e4fc8afb
 # ╟─3890f8ed-1c7d-4b62-abcc-70656e5dcb8d
 # ╠═2cec7825-a990-4c6e-ac52-15bf19e695b3
-# ╟─835cf573-edc9-4abe-bb79-7d18fe262279
+# ╠═835cf573-edc9-4abe-bb79-7d18fe262279
+# ╠═85dff4b3-1182-44ca-a7f3-e375355cafc4
 # ╟─f57d4947-2829-4e82-b5c9-14e7c1fec8ac
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
