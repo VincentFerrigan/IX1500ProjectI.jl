@@ -21,6 +21,7 @@ begin
 	using PlutoUI
 	using Plots
 	using Combinatorics
+	include("TaskB.jl")
 end
 
 # ╔═╡ 44fd5f71-c347-4754-a50b-09f43b615e47
@@ -166,13 +167,7 @@ To begin with we have to make a few assumptions:
 
 However we're interested in the case where there is more than a single comparison, i e when $N>2$. Thus we want the number of possible birthdays and for a given $N$, the number of possible permutations where 
 
-$A = {365!\over (365-N)!}$
-
-$B = {365^N}$
-
-${A\over B} \approx 0.4927$
-
-$1-{A\over B} \approx 0.5073$
+$A = {N!\over N^k(N-k)!}$
 
 ##### Simulation
 
@@ -186,12 +181,12 @@ As can be seen in the graph below:
 
 "
 
-# ╔═╡ 0f36b297-a4fa-479d-86d3-2d74a2bb1063
-1/365
+# ╔═╡ 8d164e4a-2cff-4499-b5a0-56702b03cc38
+pdx = TaskB.bday_pdx(23)
 
 # ╔═╡ f57d4947-2829-4e82-b5c9-14e7c1fec8ac
 md"
-## Code
+### Code
 "
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -213,7 +208,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.0"
 manifest_format = "2.0"
-project_hash = "0300c7d5a0356e63b436f1570cb333a7e42e3986"
+project_hash = "5ed6b0828ff0f1bcb3462cce49297ecb276bd0f6"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -401,9 +396,9 @@ version = "0.66.2"
 
 [[deps.GR_jll]]
 deps = ["Artifacts", "Bzip2_jll", "Cairo_jll", "FFMPEG_jll", "Fontconfig_jll", "GLFW_jll", "JLLWrappers", "JpegTurbo_jll", "Libdl", "Libtiff_jll", "Pixman_jll", "Pkg", "Qt5Base_jll", "Zlib_jll", "libpng_jll"]
-git-tree-sha1 = "2d908286d120c584abbe7621756c341707096ba4"
+git-tree-sha1 = "3697c23d09d5ec6f2088faa68f0d926b6889b5be"
 uuid = "d2c73de3-f751-5644-a686-071e5b155ba9"
-version = "0.66.2+0"
+version = "0.67.0+0"
 
 [[deps.Gettext_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "JLLWrappers", "Libdl", "Libiconv_jll", "Pkg", "XML2_jll"]
@@ -626,9 +621,9 @@ uuid = "d6f4376e-aef5-505a-96c1-9c027394607a"
 
 [[deps.MbedTLS]]
 deps = ["Dates", "MbedTLS_jll", "MozillaCACerts_jll", "Random", "Sockets"]
-git-tree-sha1 = "ae6676d5f576ccd21b6789c2cbe2ba24fcc8075d"
+git-tree-sha1 = "6872f9594ff273da6d13c7c1a1545d5a8c7d0c1c"
 uuid = "739be429-bea8-5141-9913-cc70e7f3736d"
-version = "1.1.5"
+version = "1.1.6"
 
 [[deps.MbedTLS_jll]]
 deps = ["Artifacts", "Libdl"]
@@ -1165,7 +1160,7 @@ version = "1.4.1+0"
 # ╠═29b0ef36-c28a-4f43-8f74-24ddac1e5410
 # ╠═2c9e488a-7f64-46dc-84f8-41f24c9c9762
 # ╠═ace97548-f911-4727-8318-79aac3e1ef0d
-# ╠═0f36b297-a4fa-479d-86d3-2d74a2bb1063
+# ╠═8d164e4a-2cff-4499-b5a0-56702b03cc38
 # ╠═f57d4947-2829-4e82-b5c9-14e7c1fec8ac
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

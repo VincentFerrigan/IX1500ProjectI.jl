@@ -2,6 +2,14 @@
 
 module TaskB
 
+function bday_pdx(k)
+    a = factorial(big(365))
+    b = factorial(big(365-k))
+    c = BigInt(365)^k
+    return 1-(a/(b*c))
+end
+
+
 function simulate_bpdx(n, k)
     for i in 1:k
         hit = 0
