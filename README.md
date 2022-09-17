@@ -11,6 +11,7 @@
 
 - How do I add keybindings?
 - How do I spellcheck with LT?
+- **Issues with including module. Temp fix has been to import code from TaskB.jl**
 
 ### Task A
 
