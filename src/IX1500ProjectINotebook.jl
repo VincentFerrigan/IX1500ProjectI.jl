@@ -297,6 +297,20 @@ Intuitively we can see that this is wrong. No matter how many people we have (on
 
 Now it's easy to see that this calculation is much different from the one in the birthday paradox. The main reason being that we're only comparing one person to the rest rather than comparing everyone to everyone. This is why we get approximately 50% probability in one case and just over 6% in the other."
 
+# ╔═╡ ad52f523-bc14-4742-aab1-e6d54e682f2c
+@bind u Slider(2:365)
+
+# ╔═╡ 80931f68-5f56-4a05-b453-8a36e4fc8afb
+pdx = Vector{Float64}(1:u);
+
+# ╔═╡ 3890f8ed-1c7d-4b62-abcc-70656e5dcb8d
+for n in eachindex(pdx)
+	pdx[n] = TaskB.bday_pdx(n)
+end
+
+# ╔═╡ 2cec7825-a990-4c6e-ac52-15bf19e695b3
+plot(pdx, legend=false, xlabel="year", ylabel="apples")
+
 # ╔═╡ 835cf573-edc9-4abe-bb79-7d18fe262279
 md"
 ##### Simulation
@@ -1304,11 +1318,15 @@ version = "1.4.1+0"
 # ╟─357d80bd-a1e6-41a0-aa18-b6ba1141a8e2
 # ╟─782642df-2780-4c5e-84e2-8c901adc8af3
 # ╟─7337465f-949f-40af-872e-ef9e2d9238bc
-# ╟─083ccec4-9254-4ee1-a038-0c797549c3ec
+# ╠═083ccec4-9254-4ee1-a038-0c797549c3ec
 # ╟─0d8ae0ea-2726-4222-b1b4-f53fb35d181e
 # ╟─20a92964-0028-4939-b0ac-05c8adf19543
 # ╟─327de52f-16fc-4144-a5c7-f9813a10b8c2
-# ╟─65ec3e02-1d7d-4fdb-a617-df3289b6639a
+# ╠═65ec3e02-1d7d-4fdb-a617-df3289b6639a
+# ╠═ad52f523-bc14-4742-aab1-e6d54e682f2c
+# ╟─80931f68-5f56-4a05-b453-8a36e4fc8afb
+# ╟─3890f8ed-1c7d-4b62-abcc-70656e5dcb8d
+# ╠═2cec7825-a990-4c6e-ac52-15bf19e695b3
 # ╟─835cf573-edc9-4abe-bb79-7d18fe262279
 # ╟─f57d4947-2829-4e82-b5c9-14e7c1fec8ac
 # ╟─00000000-0000-0000-0000-000000000001
