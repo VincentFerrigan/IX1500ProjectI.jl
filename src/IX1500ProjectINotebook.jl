@@ -32,7 +32,7 @@ function bday_pdx(k)
     b = factorial(big(365-k))
     c = BigInt(365)^k
     return 1-(a/(b*c))
-end
+end;
 
 # ╔═╡ bcd5d21d-408a-436d-b168-8864606eef66
 function find_duplicate(a)
@@ -45,7 +45,7 @@ function find_duplicate(a)
         end
     end   
     return false
-end
+end;
 
 # ╔═╡ ff5d9cfe-a16e-4047-a677-897ee593e894
 function simulate_bpdx(n, k)
@@ -66,7 +66,7 @@ function simulate_bpdx(n, k)
     end
     prob = hit/counter
     return prob
-end
+end;
 
 # ╔═╡ d14e9714-3365-11ed-1125-7be966581a61
 md"
@@ -368,7 +368,7 @@ end;
 
 # ╔═╡ fb42651b-1610-47c8-8062-c2a6f0c2096e
 begin
-	plot(pdx1, label="calculated")
+	plot(pdx1, label="calculated", legend=:bottomright)
 	plot!(pdx2, label="result")
 end 
 
@@ -396,7 +396,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.0"
 manifest_format = "2.0"
-project_hash = "5ed6b0828ff0f1bcb3462cce49297ecb276bd0f6"
+project_hash = "0300c7d5a0356e63b436f1570cb333a7e42e3986"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1328,7 +1328,7 @@ version = "1.4.1+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═44fd5f71-c347-4754-a50b-09f43b615e47
+# ╟─44fd5f71-c347-4754-a50b-09f43b615e47
 # ╟─fdb045e0-f4e1-46a3-8d9f-11958a61c6df
 # ╟─2a2bbe24-4d85-4a02-8bb0-41f0cecae76b
 # ╟─ff5d9cfe-a16e-4047-a677-897ee593e894
@@ -1374,7 +1374,7 @@ version = "1.4.1+0"
 # ╟─20a92964-0028-4939-b0ac-05c8adf19543
 # ╟─327de52f-16fc-4144-a5c7-f9813a10b8c2
 # ╟─65ec3e02-1d7d-4fdb-a617-df3289b6639a
-# ╠═835cf573-edc9-4abe-bb79-7d18fe262279
+# ╟─835cf573-edc9-4abe-bb79-7d18fe262279
 # ╟─0708f674-8218-4898-8b27-91be34ac6b1a
 # ╟─5868608f-2a67-463b-80e8-96ac53f434cc
 # ╠═fb42651b-1610-47c8-8062-c2a6f0c2096e
