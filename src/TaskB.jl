@@ -9,15 +9,15 @@ function bday_pdx(k)
     return 1-(a/(b*c))
 end
 
-
 function simulate_bpdx(n, k)
     hit = 0
     counter = 0
     for i in 1:k
-        a = Vector{Int64}(undef, n)
+        a = Vector{Int64}(1:n)
         for j in eachindex(a)
             a[j] = rand(1:365)
         end
+
         if find_duplicate(a)
             hit += 1
             counter += 1
@@ -26,14 +26,15 @@ function simulate_bpdx(n, k)
         end
     end
     prob = hit/counter
+    println(prob)
     return prob
 end
 
 function find_duplicate(a)
-    for i in eachindex(a)
-        for j in eachindex(a)
-            k = i + 1
-            if !(k >= length(a)) && a[i] == a[k]
+    l = length(a)
+    for i in 1:l-1
+        for j in i+1:l
+            if a[i] == a[j]
                 return true
             end
         end
@@ -41,7 +42,7 @@ function find_duplicate(a)
     return false
 end
 
-q = simulate_bpdx(23, 1000000)
+q = simulate_bpdx(23, 1000)
 
 println(q)
 
