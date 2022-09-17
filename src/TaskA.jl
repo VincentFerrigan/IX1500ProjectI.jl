@@ -1,12 +1,10 @@
-#= 
-TaskA.jl
-- Julia version: 1.8.0
-- Author: Vincent Ferrigan <ferrigan@kth.se>
-- Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
-- Assignment: Project 1
-- Date: 2022-09-17
-- Version: 0.2
-=#
+# TaskA.jl
+# - Julia version: 1.8.0
+# - Author: Vincent Ferrigan <ferrigan@kth.se>
+# - Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
+# - Assignment: Project 1
+# - Date: 2022-09-17
+# - Version: 0.3
 
 module TaskA
 using Combinatorics
@@ -55,40 +53,55 @@ function fulldeck()
 end
 
 function hasonepair(cards::Vector{Card})
-    # must exclude two pair, three of a kind and four of a kind
+    # must exclude two pairs, three of a kind and four of a kind
     # short-circuit return condition
     n = length(cards)
 	n < 2  &&  return false
 
     for i = 1:n
-        count = 1
         for j = (i + 1):n
             if cards[i].rank == cards[j].rank
-                count += 1
+                return true
             end
-            if count == 2 return true end
         end
     end
     return false
 end
 
-function hastwopair(cards)
-    # must exlude fakepositivs, like full-house, one pair etc
+function hastwopairs(cards)
+    # must exclude fakepositivs, like full-house, one pair etc
+    # short-circuit return condition
     n = length(cards)
 	n < 4  &&  return false
 
-    countpairs = 0
-    for i = 1:n
-        countpair = 1
-        for j = (i + 1):n
-            if cards[i].rank == cards[j].rank
-                countpair += 1
+    nbr = 0
+    cardranks = Vector{Symbol}(undef, 0)
+
+    for card ∈ cards
+        push!(cardranks, card.rank)
+    end
+
+    for card ∈ cards
+        if size(findall(isequal(card.rank), cardranks))[1] == 2
+            if nbr == 0 
+                nbr = card.nbr
+            elseif nbr != card.nbr
+                return true
             end
-            if countpair == 2 countpairs += 1 end
         end
-        if countpairs == 2 return true end
     end
     return false
+    # nbr = 0
+    # for i = 1:n
+    #     for j = (i + 1):n
+    #         if cards[i].rank == cards[j].rank && nbr == 0
+    #             nbr = cards[i].nbr
+    #         elseif cards[i].rank == cards[j].rank && nbr == cards[j].nbr
+    #             return true
+    #         end
+    #     end
+    # end
+    # return false
 end
 
 function hasthreeofakind(cards)
@@ -97,13 +110,13 @@ function hasthreeofakind(cards)
     n = length(cards)
 	n < 3  &&  return false
 
-    for i = 1:n
-        count = 1
-        for j = (i + 1):n
-            if cards[i].rank == cards[j].rank
-                count += 1
-            end
-            if count == 3 return true end
+    cardranks = Vector{Symbol}(undef, 0)
+    for card ∈ cards
+        push!(cardranks, card.rank)
+    end
+    for card ∈ cards
+        if size(findall(isequal(card.rank), cardranks))[1] == 3
+            return true
         end
     end
     return false
@@ -114,17 +127,21 @@ function hasstraight(cards)
     n = length(cards)
 	n < 5  &&  return false
 
-    # sort
-    temp = sort(cards, by = c -> c.nbr)
+    cardnbrs = Vector(undef, 0)
+    for card ∈ cards
+        push!(cardnbrs, card.nbr)
+    end
+
+    sort!(cardnbrs)
     start = 1
     
-    if cards[1].nbr == 1 && cards[n].nbr == 13
+    if cardnbrs[1] == 1 && cardnbrs[n] == 13
         start = 2
     end
 
     for i = start:n
         for j = i+1:n
-            if cards[j].nbr != cards[i].nbr + 1
+            if cardnbrs[j] != (cardnbrs[i] + 1)
                 return false
             end
         end
@@ -151,7 +168,7 @@ function hasfullhouse(cards)
     n = length(cards)
 	n < 5  &&  return false
 
-    return hastwopair(cards) && hasthreeofakind(cards)
+    return hasonepair(cards) && hasthreeofakind(cards)
 end
 
 
@@ -160,16 +177,26 @@ function hasfourofakind(cards)
     n = length(cards)
 	n < 4  &&  return false
 
-    for i = 1:n
-        count = 1
-        for j = (i + 1):n
-            if cards[i].rank == cards[j].rank
-                count += 1
-            end
-            if count == 4 return true end
+    cardranks = Vector{Symbol}(undef, 0)
+    for card ∈ cards
+        push!(cardranks, card.rank)
+    end
+    for card ∈ cards
+        if size(findall(isequal(card.rank), cardranks))[1] == 4
+            return true
         end
     end
     return false
+    # for i = 1:n
+    #     count = 1
+    #     for j = (i + 1):n
+    #         if cards[i].rank == cards[j].rank
+    #             count += 1
+    #         end
+    #         if count == 4 return true end
+    #     end
+    # end
+    # return false
 end
 
 function hasstraightflush(cards)
@@ -186,7 +213,12 @@ function hasroyalstraightflush(cards)
     n = length(cards)
 	n < 5  &&  return false
 
-   return hasstraightflush(cards) && :ace in cards && :king in cards
+    cardranks = Vector{Symbol}(undef, 0)
+    for card ∈ cards
+        push!(cardranks, card.rank)
+    end
+
+   return hasstraightflush(cards) && :ace in cardranks && :king in cardranks
 end
     
 
@@ -197,17 +229,17 @@ const HANDCOMB = combinations(fulldeck(), 5) |> collect
 
 # partitions(HOLECOMB)
 
-decktest = fulldeck()
-holetest = Vector{Card}(undef, 0)
-push!(holetest, pop!(decktest))
-push!(holetest, pop!(decktest))
+# deckteVst = fulldeck()
+# holetest = Vector{Card}(undef, 0)
+# push!(holetest, pop!(decktest))
+# push!(holetest, pop!(decktest))
 
-comunitytest = Vector{Card}(undef, 0)
-push!(comunitytest, pop!(decktest))
-push!(comunitytest, pop!(decktest))
-push!(comunitytest, pop!(decktest))
+# comunitytest = Vector{Card}(undef, 0)
+# push!(comunitytest, pop!(decktest))
+# push!(comunitytest, pop!(decktest))
+# push!(comunitytest, pop!(decktest))
 
-handtest = vcat(holetest, comunitytest)
+# handtest = vcat(holetest, comunitytest)
 
 
 # parttest = partitions(handtest, 2) |> collect
@@ -215,7 +247,7 @@ handtest = vcat(holetest, comunitytest)
 
 dict = Dict(
     :onepair =>         filter(x -> hasonepair(x), HANDCOMB),
-    :twopairs =>        filter(x -> hastwopair(x), HANDCOMB),
+    :twopairs =>        filter(x -> hastwopairs(x), HANDCOMB),
     :threeofakind =>    filter(x -> hasthreeofakind(x), HANDCOMB),
     :straight =>        filter(x -> hasstraight(x), HANDCOMB),
     :flush =>           filter(x -> hasflush(x), HANDCOMB),
@@ -239,4 +271,9 @@ dict = Dict(
 # println(t)
 # filter(x -> flush(partitions(x)), HOLECOMB)
 # HOLECOMB
+
+for v in values(dict)
+    println(size(v)[1])
+end
+
 end # module
