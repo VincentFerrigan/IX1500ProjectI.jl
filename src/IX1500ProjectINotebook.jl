@@ -27,9 +27,6 @@ end
 # ╔═╡ 44fd5f71-c347-4754-a50b-09f43b615e47
 ### A ProjectOneGroup17.jl notebook ###
 
-# ╔═╡ 7d3d76b4-a16b-4f86-bb72-6e489edd243e
-
-
 # ╔═╡ d14e9714-3365-11ed-1125-7be966581a61
 md"
 # Report Project I
@@ -127,29 +124,6 @@ group, exceeds 50%, when the group consists of only 23 people.
 * Simulate the birthday paradox repeatedly and calculate the average probability for different values of N . Draw graphs and compare to the calculated versions above. Conclusions?
 "
 
-# ╔═╡ 7486b260-47f7-49be-a36e-0c1fd3e17da5
-#Sorry for the junk code below, just testing stuff
-
-# ╔═╡ 8a487347-33a8-4e82-97c9-34df569f68ea
-@bind x Slider(1:25)
-
-# ╔═╡ 7cc42621-0e05-4124-a850-b94ee1faee52
-
-
-# ╔═╡ b7fc9f8a-7493-4587-8e6e-849efb54bad3
-N = 1:x
-
-# ╔═╡ fc5c1176-b0ab-47d0-b802-fe2b9cdb146d
-prob = Vector{Float64}(1:x)
-
-# ╔═╡ 29b0ef36-c28a-4f43-8f74-24ddac1e5410
-for n in eachindex(prob)
-	prob[n]= n^2+x+5
-end
-
-# ╔═╡ 2c9e488a-7f64-46dc-84f8-41f24c9c9762
-plot(N, prob)
-
 # ╔═╡ ace97548-f911-4727-8318-79aac3e1ef0d
 md"
 #### Result
@@ -163,12 +137,168 @@ To begin with we have to make a few assumptions:
 3. There are no dependencies between birthdays (we discount twin, triplets etc)
 4. The set of people $N$ is completely random
 
+To begin with we have to somehow derive a formula for calculating the probability that there is a match between the birthdays of two people out of the $N$ people in the room.
 
+If we can caluclate the probability of no two people with matching birthdays existing, then we can subtract that from $1$ to get the probability of two people sharing a birthday.
 
-However we're interested in the case where there is more than a single comparison, i e when $N>2$. Thus we want the number of possible birthdays and for a given $N$, the number of possible permutations where 
+Using combinatorics we can calculate the probability of two people not sharing a birthday by first calculating the number of outcomes where no two people share a birthday $A$. We can then calculate the total number of possible outcomes $B$.
 
-$A = {N!\over N^k(N-k)!}$
+This gives us:
 
+$P(A) = {A \over B}$
+
+The number of outcomes where no two people share a birthday is given by the number of permutations without repetition:
+
+${365!\over (365-N)!}$
+
+The total number of outcomes is given by the the number of permutations with repetition:
+
+$365^N$
+
+Combining these gives:
+
+${{365!\over (365-N)!} \over 365^N} = {365!\over 365^N(365-N)!}$
+
+Subtract from 1:
+
+$1 - {365!\over 365^N(365-N)!}$
+
+Calculating for N=23 give us:
+"
+
+# ╔═╡ 4d8ba5aa-d0e4-4313-a83e-4de421fce083
+P_23 = TaskB.bday_pdx(23);
+
+# ╔═╡ 1cbd19e5-bd41-4e43-8140-b23d1a6c4d26
+setprecision(10) do
+round(P_23; sigdigits=2)
+end
+
+# ╔═╡ b14ed635-d84c-4a3d-87c1-c190bcb5d108
+md"
+Which is the around 50% probability that we should get.
+
+If we now instead solve for N = 40 we get:
+"
+
+# ╔═╡ 6c3bbac0-d1a8-414c-9950-02b865b836ad
+P_40 = TaskB.bday_pdx(40);
+
+# ╔═╡ c2119e11-1d36-494f-9036-923ae7b0f442
+setprecision(10) do
+round(P_40; sigdigits=2)
+end
+
+# ╔═╡ d8016d78-b935-4b0e-a4c3-7b2bb186638f
+md"
+If we now instead want to see what the probability of someone sharing a birthday with us specifically we will have to use a different method.
+
+With the same assumptions as above we have the probability of one person sharing a birthday with us can be approximated with:
+
+${1 \over 365}$
+
+However to calculate the probability for $N$ people we can't just multiply this formula by $N$. Like above we can calculate the number of outcomes where there is no match and the total number of possible outcomes and subtract the quotient of those from 1.
+
+This gives us a base probability of
+
+$1-{364 \over 365}$
+
+We can extend this to $N$ comparisons with permutations with repetetion giving us:
+
+$1-\Bigl({364 \over 365}\Bigl)^N$
+
+Comparing this with the approximative formula above, and with $N=1$ give us:
+"
+
+# ╔═╡ 28f86fad-f649-452e-a931-111b7abae327
+md"Approximative:"
+
+# ╔═╡ 68f24a89-8329-4c78-9019-20b995a4ceca
+1/365
+
+# ╔═╡ 81930122-7292-4a91-8686-7f5124b4bb3b
+md"Combinatoric:"
+
+# ╔═╡ 8decc52c-8c6f-438f-aa81-7d7977b1e458
+1-(364/365)
+
+# ╔═╡ 8925b8a5-9dcf-4463-bbe1-14aa820a3dc4
+md"
+As can be seen the difference here is miniscule, but what happens if we increase N for both our combinatoric formula above and for multiplicative version of the approximative ash shown below:
+
+$N \cdot {1 \over 365}$
+
+For N = 5
+"
+
+# ╔═╡ c90bb186-bd29-4827-be02-74f016d225f1
+md"Approximative:"
+
+# ╔═╡ 7fe8487f-0754-4292-a864-d4a7217da773
+5(1/365)
+
+# ╔═╡ f4e39beb-b88e-4851-b469-415796ffbf29
+md"Combinatoric:"
+
+# ╔═╡ 3c2ec51e-09cf-4753-8f5b-4031f85f403c
+1-((364/365)^5)
+
+# ╔═╡ 0934feee-3dcb-47b6-b695-a7e84e5e6413
+md"Still close but the difference is more pronounced let's see what happens in the birthday paradox situation of $N=23$"
+
+# ╔═╡ 3ab8ea7b-b95f-4341-9de4-340d01a37a6d
+23(1/365)
+
+# ╔═╡ 86573f03-7a57-4262-9a26-babe47b485c3
+1-((364/365)^23)
+
+# ╔═╡ 199bd2a5-a248-4f4f-bece-48e4904a004b
+md"Two final tests one for $N=40$ and one for $N=365$"
+
+# ╔═╡ 48abcd9f-bde5-4ff3-b5f2-d346574b0f39
+md"$N=40:$"
+
+# ╔═╡ 5bbbc1b5-54e1-498c-877c-fc2d1f792077
+40(1/365)
+
+# ╔═╡ 6e27aa7e-aea1-49fc-91ab-c79ebe3c4ca0
+1-((364/365)^40)
+
+# ╔═╡ eba34638-afab-43fd-adc7-54b32a7f87dd
+md"$N=365:$"
+
+# ╔═╡ 357d80bd-a1e6-41a0-aa18-b6ba1141a8e2
+365(1/365)
+
+# ╔═╡ 782642df-2780-4c5e-84e2-8c901adc8af3
+1-((364/365)^365)
+
+# ╔═╡ 7337465f-949f-40af-872e-ef9e2d9238bc
+md"Here we can see something interesting. First of all we see that the difference between the two methods become more and more pronounced as $N$ increases.
+
+We can experiment further with the comparisons by testing for more values of $N$"
+
+# ╔═╡ 083ccec4-9254-4ee1-a038-0c797549c3ec
+@bind N Slider(1:1000)
+
+# ╔═╡ 0d8ae0ea-2726-4222-b1b4-f53fb35d181e
+N
+
+# ╔═╡ 20a92964-0028-4939-b0ac-05c8adf19543
+N*(1/365)
+
+# ╔═╡ 327de52f-16fc-4144-a5c7-f9813a10b8c2
+1-((364/365)^N)
+
+# ╔═╡ 65ec3e02-1d7d-4fdb-a617-df3289b6639a
+md"But more importantly, once we reach the same $N$ as there is possible outcomes the approximative calculations gives us a 100% probability.
+
+Intuitively we can see that this is wrong. No matter how many people we have (once again given previous assumptions) there should be a non-zero probability that no one shares your birthday. In 365 people we could have a situation where everyone was born the day after you for an example. The odds are astronomical, but they do exist.
+
+Now it's easy to see that this calculation is much different from the one in the birthday paradox. The main reason being that we're only comparing one person to the rest rather than comparing everyone to everyone. This is why we get approximately 50% probability in one case and just over 6% in the other."
+
+# ╔═╡ 835cf573-edc9-4abe-bb79-7d18fe262279
+md"
 ##### Simulation
 
 For the simulation we assign random numbers $(1, 365)$ to a vector of length $N$. We then check for duplicates. We have two counters $amount$ and $hit$ initialized to $0$. If we find a duplicate we iterate both counters, if we don't we only iterate the $amount$ counter. We run this entire process $k$ times, where $k=placeholder$. When we have run this we can divide the number of $hits$ by $amount$ to get the actual probability.
@@ -178,11 +308,7 @@ $P(N)={hits\over amount}$
 For high enough values of $k$ this should start to approximated the calculated probability.
 
 As can be seen in the graph below:
-
 "
-
-# ╔═╡ 8d164e4a-2cff-4499-b5a0-56702b03cc38
-pdx = TaskB.bday_pdx(23)
 
 # ╔═╡ f57d4947-2829-4e82-b5c9-14e7c1fec8ac
 md"
@@ -1140,9 +1266,8 @@ version = "1.4.1+0"
 """
 
 # ╔═╡ Cell order:
-# ╠═44fd5f71-c347-4754-a50b-09f43b615e47
-# ╠═3c889854-4e74-4136-aa45-0a3c7430df61
-# ╠═7d3d76b4-a16b-4f86-bb72-6e489edd243e
+# ╟─44fd5f71-c347-4754-a50b-09f43b615e47
+# ╟─3c889854-4e74-4136-aa45-0a3c7430df61
 # ╟─d14e9714-3365-11ed-1125-7be966581a61
 # ╠═d34338c7-b02d-4290-b3e4-212373278cb1
 # ╟─fa06cb75-cef4-48c7-a920-27be6d51f7af
@@ -1151,16 +1276,40 @@ version = "1.4.1+0"
 # ╠═67e3c538-0330-461b-abfd-3271d13cf4fc
 # ╟─8118483c-5b54-4fc2-8825-17f2022b4316
 # ╟─d95bed62-ed09-4fb8-9401-f8d39300ac19
-# ╠═dd33dca5-d435-41bc-afa8-b8d393aed7cd
-# ╠═7486b260-47f7-49be-a36e-0c1fd3e17da5
-# ╠═8a487347-33a8-4e82-97c9-34df569f68ea
-# ╠═7cc42621-0e05-4124-a850-b94ee1faee52
-# ╠═b7fc9f8a-7493-4587-8e6e-849efb54bad3
-# ╠═fc5c1176-b0ab-47d0-b802-fe2b9cdb146d
-# ╠═29b0ef36-c28a-4f43-8f74-24ddac1e5410
-# ╠═2c9e488a-7f64-46dc-84f8-41f24c9c9762
-# ╠═ace97548-f911-4727-8318-79aac3e1ef0d
-# ╠═8d164e4a-2cff-4499-b5a0-56702b03cc38
-# ╠═f57d4947-2829-4e82-b5c9-14e7c1fec8ac
+# ╟─dd33dca5-d435-41bc-afa8-b8d393aed7cd
+# ╟─ace97548-f911-4727-8318-79aac3e1ef0d
+# ╟─4d8ba5aa-d0e4-4313-a83e-4de421fce083
+# ╟─1cbd19e5-bd41-4e43-8140-b23d1a6c4d26
+# ╟─b14ed635-d84c-4a3d-87c1-c190bcb5d108
+# ╟─6c3bbac0-d1a8-414c-9950-02b865b836ad
+# ╟─c2119e11-1d36-494f-9036-923ae7b0f442
+# ╟─d8016d78-b935-4b0e-a4c3-7b2bb186638f
+# ╟─28f86fad-f649-452e-a931-111b7abae327
+# ╟─68f24a89-8329-4c78-9019-20b995a4ceca
+# ╟─81930122-7292-4a91-8686-7f5124b4bb3b
+# ╟─8decc52c-8c6f-438f-aa81-7d7977b1e458
+# ╟─8925b8a5-9dcf-4463-bbe1-14aa820a3dc4
+# ╟─c90bb186-bd29-4827-be02-74f016d225f1
+# ╟─7fe8487f-0754-4292-a864-d4a7217da773
+# ╟─f4e39beb-b88e-4851-b469-415796ffbf29
+# ╟─3c2ec51e-09cf-4753-8f5b-4031f85f403c
+# ╟─0934feee-3dcb-47b6-b695-a7e84e5e6413
+# ╟─3ab8ea7b-b95f-4341-9de4-340d01a37a6d
+# ╟─86573f03-7a57-4262-9a26-babe47b485c3
+# ╟─199bd2a5-a248-4f4f-bece-48e4904a004b
+# ╟─48abcd9f-bde5-4ff3-b5f2-d346574b0f39
+# ╠═5bbbc1b5-54e1-498c-877c-fc2d1f792077
+# ╠═6e27aa7e-aea1-49fc-91ab-c79ebe3c4ca0
+# ╟─eba34638-afab-43fd-adc7-54b32a7f87dd
+# ╟─357d80bd-a1e6-41a0-aa18-b6ba1141a8e2
+# ╟─782642df-2780-4c5e-84e2-8c901adc8af3
+# ╟─7337465f-949f-40af-872e-ef9e2d9238bc
+# ╟─083ccec4-9254-4ee1-a038-0c797549c3ec
+# ╟─0d8ae0ea-2726-4222-b1b4-f53fb35d181e
+# ╟─20a92964-0028-4939-b0ac-05c8adf19543
+# ╟─327de52f-16fc-4144-a5c7-f9813a10b8c2
+# ╟─65ec3e02-1d7d-4fdb-a617-df3289b6639a
+# ╟─835cf573-edc9-4abe-bb79-7d18fe262279
+# ╟─f57d4947-2829-4e82-b5c9-14e7c1fec8ac
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
