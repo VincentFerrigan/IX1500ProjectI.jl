@@ -52,6 +52,7 @@
 ### Poker
 * [Hand rankings](https://www.pokerstars.se/en/poker/games/rules/hand-rankings/)
 * [Texas hold'em](https://www.pokerstars.se/en/poker/games/texas-holdem/)
+* [Poker probability wiki](https://en.wikipedia.org/wiki/Poker_probability)
 
 ### Birthday Paradox
 * [Understanding the Birthday Paradox](https://betterexplained.com/articles/understanding-the-birthday-paradox/)
