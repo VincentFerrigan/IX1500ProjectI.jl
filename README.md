@@ -6,8 +6,8 @@
 - How do I add non-code? 
 *Well, just use Markdown with md\" ...\"*
 
-- How do I add mathematical nonation?
-*Use LaTeX notation. Ex: $$a = {x /over 1}$$*
+- ~~How do I add mathematical nonation?~~
+*Use LaTeX notation. Ex: $a = {x /over 1}$*
 
 - How do I add keybindings?
 - How do I spellcheck with LT?
@@ -16,7 +16,7 @@
 
 ### Task B
 - ~~What assumptions are we making?~~
-- Implement a formula that calculates the probability of
+- Implement a formula that calculates the probability of N people.
 - Solve N=40
 - Compare to single comparision with N people.
 - Draw graphs.
