@@ -36,10 +36,10 @@ end
 
 # ╔═╡ bcd5d21d-408a-436d-b168-8864606eef66
 function find_duplicate(a)
-    for i in eachindex(a)
-        for j in eachindex(a)
-            k = i + 1
-            if !(k >= length(a)) && a[i] == a[k]
+    l = length(a)
+    for i in 1:l-1
+        for j in i+1:l
+            if a[i] == a[j]
                 return true
             end
         end
@@ -52,10 +52,11 @@ function simulate_bpdx(n, k)
     hit = 0
     counter = 0
     for i in 1:k
-        a = Vector{Int64}(undef, n)
+        a = Vector{Int64}(1:n)
         for j in eachindex(a)
             a[j] = rand(1:365)
         end
+
         if find_duplicate(a)
             hit += 1
             counter += 1
@@ -337,41 +338,33 @@ Intuitively we can see that this is wrong. No matter how many people we have (on
 
 Now it's easy to see that this calculation is much different from the one in the birthday paradox. The main reason being that we're only comparing one person to the rest rather than comparing everyone to everyone. This is why we get approximately 50% probability in one case and just over 6% in the other."
 
-# ╔═╡ ad52f523-bc14-4742-aab1-e6d54e682f2c
-@bind u Slider(2:365)
-
-# ╔═╡ 80931f68-5f56-4a05-b453-8a36e4fc8afb
-pdx1 = Vector{Float64}(1:u);
-
-# ╔═╡ 3890f8ed-1c7d-4b62-abcc-70656e5dcb8d
-for n in eachindex(pdx1)
-	pdx1[n] = bday_pdx(n)
-end
-
-# ╔═╡ 2cec7825-a990-4c6e-ac52-15bf19e695b3
-plot(pdx1, legend=false, xlabel="N", ylabel="Probability")
-
 # ╔═╡ 835cf573-edc9-4abe-bb79-7d18fe262279
 md"
 ##### Simulation
 
-For the simulation we assign random numbers $(1, 365)$ to a vector of length $N$. We then check for duplicates. We have two counters $amount$ and $hit$ initialized to $0$. If we find a duplicate we iterate both counters, if we don't we only iterate the $amount$ counter. We run this entire process $k$ times, where $k=placeholder$. When we have run this we can divide the number of $hits$ by $amount$ to get the actual probability.
+For the simulation we assign random numbers $(1, 365)$ to a vector of length $N$. We then check for duplicates. We have two counters $amount$ and $hit$ initialized to $0$. If we find a duplicate we iterate both counters, if we don't we only iterate the $amount$ counter. We run this entire process $k$ times. When we have run this we can divide the number of $hits$ by $amount$ to get the actual probability.
 
 $P(N)={hits\over amount}$
 
 For high enough values of $k$ this should start to approximated the calculated probability.
+
+Shown below is a graph of both the calculated probability and the actual results with the ability to vary $k$ from 10 to 500.
 "
 
-# ╔═╡ 85dff4b3-1182-44ca-a7f3-e375355cafc4
-a = simulate_bpdx(23, 10000);
+# ╔═╡ 0708f674-8218-4898-8b27-91be34ac6b1a
+@bind u Slider(10:500)
 
 # ╔═╡ 5868608f-2a67-463b-80e8-96ac53f434cc
-pdx2 = Vector{Float64}(1:u);
-
-# ╔═╡ d6c302bc-151b-46b3-aadd-e008612d5106
-for n in eachindex(pdx2)
-	pdx2[n] = simulate_bpdx(n, 1000)
+begin
+pdx1 = Vector{Float64}(1:100)	
+pdx2 = Vector{Float64}(1:100)
+for n in eachindex(pdx1)
+pdx1[n] = bday_pdx(n)
 end
+for n in eachindex(pdx2)
+pdx2[n] = simulate_bpdx(n, u)
+end
+end;
 
 # ╔═╡ fb42651b-1610-47c8-8062-c2a6f0c2096e
 begin
@@ -1381,14 +1374,9 @@ version = "1.4.1+0"
 # ╟─20a92964-0028-4939-b0ac-05c8adf19543
 # ╟─327de52f-16fc-4144-a5c7-f9813a10b8c2
 # ╟─65ec3e02-1d7d-4fdb-a617-df3289b6639a
-# ╠═ad52f523-bc14-4742-aab1-e6d54e682f2c
-# ╠═80931f68-5f56-4a05-b453-8a36e4fc8afb
-# ╠═3890f8ed-1c7d-4b62-abcc-70656e5dcb8d
-# ╠═2cec7825-a990-4c6e-ac52-15bf19e695b3
-# ╟─835cf573-edc9-4abe-bb79-7d18fe262279
-# ╟─85dff4b3-1182-44ca-a7f3-e375355cafc4
-# ╠═5868608f-2a67-463b-80e8-96ac53f434cc
-# ╠═d6c302bc-151b-46b3-aadd-e008612d5106
+# ╠═835cf573-edc9-4abe-bb79-7d18fe262279
+# ╟─0708f674-8218-4898-8b27-91be34ac6b1a
+# ╟─5868608f-2a67-463b-80e8-96ac53f434cc
 # ╠═fb42651b-1610-47c8-8062-c2a6f0c2096e
 # ╟─f57d4947-2829-4e82-b5c9-14e7c1fec8ac
 # ╟─00000000-0000-0000-0000-000000000001
