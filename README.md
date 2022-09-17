@@ -18,7 +18,7 @@
 - ~~What assumptions are we making?~~
 - ~~Implement a formula that calculates the probability of N people.~~
 - ~~Solve N=40~~
-- Compare to single comparision with N people.
+- ~~Compare to single comparision with N people.~~
 - Draw graphs.
 - Compute actual probabilities for a range of *N*, graph and compare to calculated probabilities.
 
