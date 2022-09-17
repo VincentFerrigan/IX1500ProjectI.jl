@@ -26,7 +26,6 @@ function simulate_bpdx(n, k)
         end
     end
     prob = hit/counter
-    println(prob)
     return prob
 end
 
