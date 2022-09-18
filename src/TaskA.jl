@@ -4,7 +4,7 @@
 # - Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
 # - Assignment: Project 1
 # - Date: 2022-09-18
-# - Version: 0.5
+# - Version: 0.6
 
 module TaskA
 using Combinatorics
@@ -171,7 +171,7 @@ function hasfullhouse(cards)
     rankset = Set()
     for card ∈ cards push!(rankset, card.rank) end
     if length(rankset) > 2 return false end
-    return hasonepair(cards) && hasthreeofakind(cards)
+    return hastwopair(cards) && hasthreeofakind(cards)
 end
 
 
@@ -215,7 +215,7 @@ function hasroyalstraightflush(cards)
         push!(rankset, card.rank)
     end
 
-   return hasstraightflush(cards) && (:ace in rankset || :king in rankset)
+   return hasstraightflush(cards) && :ace in rankset && :king in rankset
 end
 
 # OM TID FINNS
@@ -267,7 +267,7 @@ end
 # hfh = filter(x -> hasfullhouse(x), HANDCOMB)
 # h4 = filter(x -> hasfourofakind(x), HANDCOMB)
 # hsf = filter(x -> hasstraightflush(x), HANDCOMB)
-# hrsf = filter(x -> hasroyalstraightflush(x), HANDCOMB)
+hrsf = filter(x -> hasroyalstraightflush(x), HANDCOMB)
 
 # partitions(HOLECOMB)
 # deckteVst = fulldeck()
