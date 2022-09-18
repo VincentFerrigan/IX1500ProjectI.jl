@@ -44,6 +44,7 @@
 * [Julia for simple medical statistical analysis](https://www.youtube.com/watch?v=4nPmKG_f8-M&list=PLsu0TcgLDUiIznEhN165XmykqyLgzwY0Y)
 * [Blog-post: Beautiful julia](http://blog.translusion.com/posts/beautiful-julia/)
 * [juliadatascience](https://juliadatascience.io/)
+* [Tutorialpoint](https://www.tutorialspoint.com/julia/julia_dictionaries_sets.htm)
 
 ### Markdown
 * [markdown guide](https://www.markdownguide.org/)
