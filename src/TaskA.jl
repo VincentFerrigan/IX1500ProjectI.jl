@@ -19,14 +19,12 @@ const SUITS = [:♣, :♢, :♡, :♠]
 struct Card
     rank::Symbol
     suit::Symbol
-    # nbr
 
     function Card(rank::Symbol, suit::Symbol)
         # short-circuit conditionals.
         rank in RANKS || throw(ArgumentError("invalid rank: $rank"))
         suit in SUITS || throw(ArgumentError("invalid suit: $suit"))
         new(rank, suit)
-        # new(rank, suit, findfirst(isequal(rank), RANKS))
     end
 end
 
@@ -70,13 +68,6 @@ function hasonepair(cards::Vector{Card})
             return true
         end
     end
-    # for i = 1:n
-    #     for j = (i + 1):n
-    #         if cards[i].rank == cards[j].rank
-    #             return true
-    #         end
-    #     end
-    # end
     return false
 end
 
@@ -175,6 +166,9 @@ function hasfullhouse(cards)
     n = length(cards)
 	n < 5  &&  return false
 
+    rankset = Set()
+    for card ∈ cards push!(rankset, card.rank) end
+    if length(rankset) > 2 return false end
     return hasonepair(cards) && hasthreeofakind(cards)
 end
 
@@ -221,6 +215,25 @@ function hasroyalstraightflush(cards)
 
    return hasstraightflush(cards) && (:ace in rankset || :king in rankset)
 end
+
+# OM TID FINNS
+function highcard(cards)
+    rankvector = Vector{Symbol}(undef, 0)
+    valuevector = Vector(undef, 0)
+    rankset = Set()
+    suitset = Set()
+    
+    for card ∈ cards
+        push!(rankvector, card.rank)
+        push!(rankset, card.rank)
+        push!(suitset, card.suit)
+    end
+    if length(suitset) < 2 && length(cards) == 5
+        return false
+    elseif length(rankset) < 5 && length(cards) >= 5
+        return false
+    end
+end
     
 
 # collections
@@ -246,7 +259,7 @@ const HANDCOMB = combinations(fulldeck(), 5) |> collect
 # parttest = partitions(handtest, 2) |> collect
 # parts = partitions(COMMUNITYCOMB)
 
-dict = Dict(
+dictofsets = Dict(
     :onepair =>         filter(x -> hasonepair(x), HANDCOMB),
     :twopairs =>        filter(x -> hastwopairs(x), HANDCOMB),
     :threeofakind =>    filter(x -> hasthreeofakind(x), HANDCOMB),
@@ -258,31 +271,17 @@ dict = Dict(
     :royalstraightflush =>   filter(x -> hasroyalstraightflush(x), HANDCOMB)
 )
 
-# fok = filter(x -> fourofakind(x), HANDCOMB)
-# h1 = filter(x -> hasonepair(x), HANDCOMB)
-# h2 = filter(x -> hastwopairs(x), HANDCOMB)
+# h1p = filter(x -> hasonepair(x), HANDCOMB)
+# h2p = filter(x -> hastwopairs(x), HANDCOMB)
 # h3 = filter(x -> hasthreeofakind(x), HANDCOMB)
-# h4 = filter(x -> hasfourofakind(x), HANDCOMB)
 # hs = filter(x -> hasstraight(x), HANDCOMB)
 # hf = filter(x -> hasflush(x), HANDCOMB)
+hfh = filter(x -> hasfullhouse(x), HANDCOMB)
+# h4 = filter(x -> hasfourofakind(x), HANDCOMB)
+# hsf = filter(x -> hasstraightflush(x), HANDCOMB)
 # hrsf = filter(x -> hasroyalstraightflush(x), HANDCOMB)
-# # fl = filter(x -> flush(x), HANDCOMB)
-# length(HANDCOMB)
-# size(h1)[1]
-# size(h2)[1]
-# size(h3)[1]
-# size(h4)[1]
-# size(fl)[1]
-# size(fok)[1]
-# fok
-# length(COMMUNITYCOMB)
-# t = filter(x -> onepair(x), COMMUNITYCOMB)
-# length(t)
-# println(t)
-# filter(x -> flush(partitions(x)), HOLECOMB)
-# HOLECOMB
 
-for v in values(dict)
+for v in values(dictofsets)
     println(size(v)[1])
 end
 
