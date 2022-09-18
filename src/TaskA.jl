@@ -3,8 +3,8 @@
 # - Author: Vincent Ferrigan <ferrigan@kth.se>
 # - Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
 # - Assignment: Project 1
-# - Date: 2022-09-17
-# - Version: 0.3
+# - Date: 2022-09-18
+# - Version: 0.4
 
 module TaskA
 using Combinatorics
@@ -19,14 +19,14 @@ const SUITS = [:♣, :♢, :♡, :♠]
 struct Card
     rank::Symbol
     suit::Symbol
-    nbr
+    # nbr
 
     function Card(rank::Symbol, suit::Symbol)
         # short-circuit conditionals.
         rank in RANKS || throw(ArgumentError("invalid rank: $rank"))
         suit in SUITS || throw(ArgumentError("invalid suit: $suit"))
-        # new(rank, suit)
-        new(rank, suit, findfirst(isequal(rank), RANKS))
+        new(rank, suit)
+        # new(rank, suit, findfirst(isequal(rank), RANKS))
     end
 end
 
@@ -58,13 +58,25 @@ function hasonepair(cards::Vector{Card})
     n = length(cards)
 	n < 2  &&  return false
 
-    for i = 1:n
-        for j = (i + 1):n
-            if cards[i].rank == cards[j].rank
-                return true
-            end
+    rankvector = Vector{Symbol}(undef, 0)
+    rankset = Set()
+    for card ∈ cards
+        push!(rankvector, card.rank)
+        push!(rankset, card.rank)
+    end
+
+    for r ∈ rankset
+        if size(findall(isequal(r), rankvector))[1] >= 2
+            return true
         end
     end
+    # for i = 1:n
+    #     for j = (i + 1):n
+    #         if cards[i].rank == cards[j].rank
+    #             return true
+    #         end
+    #     end
+    # end
     return false
 end
 
@@ -74,34 +86,23 @@ function hastwopairs(cards)
     n = length(cards)
 	n < 4  &&  return false
 
-    nbr = 0
-    cardranks = Vector{Symbol}(undef, 0)
-
+    rankvector = Vector{Symbol}(undef, 0)
+    rankset = Set()
+    
     for card ∈ cards
-        push!(cardranks, card.rank)
+        push!(rankvector, card.rank)
+        push!(rankset, card.rank)
     end
 
-    for card ∈ cards
-        if size(findall(isequal(card.rank), cardranks))[1] == 2
-            if nbr == 0 
-                nbr = card.nbr
-            elseif nbr != card.nbr
-                return true
-            end
+    count = 0
+    for r ∈ rankset
+        if size(findall(isequal(r), rankvector))[1] >= 2
+            count +=1
         end
     end
-    return false
-    # nbr = 0
-    # for i = 1:n
-    #     for j = (i + 1):n
-    #         if cards[i].rank == cards[j].rank && nbr == 0
-    #             nbr = cards[i].nbr
-    #         elseif cards[i].rank == cards[j].rank && nbr == cards[j].nbr
-    #             return true
-    #         end
-    #     end
-    # end
-    # return false
+
+    if count >= 2 return true end
+    return false 
 end
 
 function hasthreeofakind(cards)
@@ -110,12 +111,15 @@ function hasthreeofakind(cards)
     n = length(cards)
 	n < 3  &&  return false
 
-    cardranks = Vector{Symbol}(undef, 0)
+    rankvector = Vector{Symbol}(undef, 0)
+    rankset = Set()
     for card ∈ cards
-        push!(cardranks, card.rank)
+        push!(rankvector, card.rank)
+        push!(rankset, card.rank)
     end
-    for card ∈ cards
-        if size(findall(isequal(card.rank), cardranks))[1] == 3
+
+    for r ∈ rankset
+        if size(findall(isequal(r), rankvector))[1] >= 3
             return true
         end
     end
@@ -127,23 +131,26 @@ function hasstraight(cards)
     n = length(cards)
 	n < 5  &&  return false
 
-    cardnbrs = Vector(undef, 0)
+    rankvector = Vector{Symbol}(undef, 0)
+    valuevector = Vector(undef, 0)
+    rankset = Set()
+    
     for card ∈ cards
-        push!(cardnbrs, card.nbr)
+        push!(rankvector, card.rank)
+        push!(valuevector, findfirst(isequal(card.rank), RANKS))
+        push!(rankset, card.rank)
     end
 
-    sort!(cardnbrs)
+    if length(rankset) < 5 return false end
+    sort!(valuevector)
+
     start = 1
-    
-    if cardnbrs[1] == 1 && cardnbrs[n] == 13
+    if :ace in rankset && :king in rankset
         start = 2
     end
-
-    for i = start:n
-        for j = i+1:n
-            if cardnbrs[j] != (cardnbrs[i] + 1)
-                return false
-            end
+    for i = start:n-1
+        if valuevector[i + 1] != (valuevector[i] + 1)
+            return false
         end
     end
     return true
@@ -177,26 +184,19 @@ function hasfourofakind(cards)
     n = length(cards)
 	n < 4  &&  return false
 
-    cardranks = Vector{Symbol}(undef, 0)
+    rankvector = Vector{Symbol}(undef, 0)
+    rankset = Set()
     for card ∈ cards
-        push!(cardranks, card.rank)
+        push!(rankvector, card.rank)
+        push!(rankset, card.rank)
     end
-    for card ∈ cards
-        if size(findall(isequal(card.rank), cardranks))[1] == 4
+
+    for r ∈ rankset
+        if size(findall(isequal(r), rankvector))[1] >= 4
             return true
         end
     end
     return false
-    # for i = 1:n
-    #     count = 1
-    #     for j = (i + 1):n
-    #         if cards[i].rank == cards[j].rank
-    #             count += 1
-    #         end
-    #         if count == 4 return true end
-    #     end
-    # end
-    # return false
 end
 
 function hasstraightflush(cards)
@@ -213,12 +213,13 @@ function hasroyalstraightflush(cards)
     n = length(cards)
 	n < 5  &&  return false
 
-    cardranks = Vector{Symbol}(undef, 0)
+    rankset = Set()
+    
     for card ∈ cards
-        push!(cardranks, card.rank)
+        push!(rankset, card.rank)
     end
 
-   return hasstraightflush(cards) && :ace in cardranks && :king in cardranks
+   return hasstraightflush(cards) && (:ace in rankset || :king in rankset)
 end
     
 
@@ -258,10 +259,19 @@ dict = Dict(
 )
 
 # fok = filter(x -> fourofakind(x), HANDCOMB)
-# op = filter(x -> onepair(x), HANDCOMB)
-# fl = filter(x -> flush(x), HANDCOMB)
+# h1 = filter(x -> hasonepair(x), HANDCOMB)
+# h2 = filter(x -> hastwopairs(x), HANDCOMB)
+# h3 = filter(x -> hasthreeofakind(x), HANDCOMB)
+# h4 = filter(x -> hasfourofakind(x), HANDCOMB)
+# hs = filter(x -> hasstraight(x), HANDCOMB)
+# hf = filter(x -> hasflush(x), HANDCOMB)
+# hrsf = filter(x -> hasroyalstraightflush(x), HANDCOMB)
+# # fl = filter(x -> flush(x), HANDCOMB)
 # length(HANDCOMB)
-# size(op)[1]
+# size(h1)[1]
+# size(h2)[1]
+# size(h3)[1]
+# size(h4)[1]
 # size(fl)[1]
 # size(fok)[1]
 # fok
