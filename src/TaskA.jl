@@ -4,13 +4,15 @@
 # - Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
 # - Assignment: Project 1
 # - Date: 2022-09-18
-# - Version: 0.4
+# - Version: 0.5
 
 module TaskA
 using Combinatorics
 using Random
 import Base.show
 import Base.==
+
+export collectionofhands, fulldeck, Card
 
 const RANKS = [:ace, :two, :three, :four, :five, :six, :seven, :eight, :nine, :ten, :jack, :queen, :king]
 const SUITS = [:♣, :♢, :♡, :♠]
@@ -241,8 +243,33 @@ const HOLECOMB = combinations(fulldeck(), 2) |> collect
 const COMMUNITYCOMB = combinations(fulldeck(), 3) |> collect 
 const HANDCOMB = combinations(fulldeck(), 5) |> collect 
 
-# partitions(HOLECOMB)
+function collectionofhands()
+    dict = Dict(
+        :onepair => filter(x -> hasonepair(x), HANDCOMB),
+        :twopairs => filter(x -> hastwopairs(x), HANDCOMB),
+        :threeofakind => filter(x -> hasthreeofakind(x), HANDCOMB),
+        :straight => filter(x -> hasstraight(x), HANDCOMB),
+        :flush => filter(x -> hasflush(x), HANDCOMB),
+        :fullhouse => filter(x -> hasfullhouse(x), HANDCOMB),
+        :fourofakind => filter(x -> hasfourofakind(x), HANDCOMB),
+        :straightflush => filter(x -> hasstraightflush(x), HANDCOMB),
+        :royalstraightflush => filter(x -> hasroyalstraightflush(x), HANDCOMB)
+        )
+        return dict
+end
 
+# tests
+# h1p = filter(x -> hasonepair(x), HANDCOMB)
+# h2p = filter(x -> hastwopairs(x), HANDCOMB)
+# h3 = filter(x -> hasthreeofakind(x), HANDCOMB)
+# hs = filter(x -> hasstraight(x), HANDCOMB)
+# hf = filter(x -> hasflush(x), HANDCOMB)
+# hfh = filter(x -> hasfullhouse(x), HANDCOMB)
+# h4 = filter(x -> hasfourofakind(x), HANDCOMB)
+# hsf = filter(x -> hasstraightflush(x), HANDCOMB)
+# hrsf = filter(x -> hasroyalstraightflush(x), HANDCOMB)
+
+# partitions(HOLECOMB)
 # deckteVst = fulldeck()
 # holetest = Vector{Card}(undef, 0)
 # push!(holetest, pop!(decktest))
@@ -258,31 +285,5 @@ const HANDCOMB = combinations(fulldeck(), 5) |> collect
 
 # parttest = partitions(handtest, 2) |> collect
 # parts = partitions(COMMUNITYCOMB)
-
-dictofsets = Dict(
-    :onepair =>         filter(x -> hasonepair(x), HANDCOMB),
-    :twopairs =>        filter(x -> hastwopairs(x), HANDCOMB),
-    :threeofakind =>    filter(x -> hasthreeofakind(x), HANDCOMB),
-    :straight =>        filter(x -> hasstraight(x), HANDCOMB),
-    :flush =>           filter(x -> hasflush(x), HANDCOMB),
-    :fullhouse =>       filter(x -> hasfullhouse(x), HANDCOMB),
-    :fourofakind =>     filter(x -> hasfourofakind(x), HANDCOMB),
-    :straightflush =>   filter(x -> hasstraightflush(x), HANDCOMB),
-    :royalstraightflush =>   filter(x -> hasroyalstraightflush(x), HANDCOMB)
-)
-
-# h1p = filter(x -> hasonepair(x), HANDCOMB)
-# h2p = filter(x -> hastwopairs(x), HANDCOMB)
-# h3 = filter(x -> hasthreeofakind(x), HANDCOMB)
-# hs = filter(x -> hasstraight(x), HANDCOMB)
-# hf = filter(x -> hasflush(x), HANDCOMB)
-hfh = filter(x -> hasfullhouse(x), HANDCOMB)
-# h4 = filter(x -> hasfourofakind(x), HANDCOMB)
-# hsf = filter(x -> hasstraightflush(x), HANDCOMB)
-# hrsf = filter(x -> hasroyalstraightflush(x), HANDCOMB)
-
-for v in values(dictofsets)
-    println(size(v)[1])
-end
 
 end # module
