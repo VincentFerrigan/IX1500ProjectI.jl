@@ -116,43 +116,55 @@ $\lbrace \text{one pairs} \rbrace
 # ╔═╡ 512c09cc-f892-49e6-a119-82b762f9dad4
 # Difference
 begin
-	ONEPAIR 		= setdiff(OP, TP, TK, FK, FH) # snitt
-	TWOPAIR 		= setdiff(TP, TK, FK, FH)
-	THREEOFAKIND 	= setdiff(TK, FK, FH)
-	STRAIGHT 		= setdiff(S, SF, RSF)
-	FLUSH 			= setdiff(F, SF, RSF)
+	ONEPAIR 		= setdiff(OP, TP, TK) 	# onepair ∖ twopair ∖ threeofakind 
+	TWOPAIR 		= setdiff(TP, FH)		# twopair ∖ fullhouse
+	THREEOFAKIND 	= setdiff(TK, FK, FH)	# threeofakind ∖ fourofakind ∖ fullhouse
+	STRAIGHT 		= setdiff(S, SF)		# straight ∖ straightflush
+	FLUSH 			= setdiff(F, SF)		# flush ∖ straightflush
 	FULLHOUSE 		= FH
 	FOUROFAKIND 	= FK
-	STRAIGHTFLUSH 	= setdiff(SF, RSF)
+	STRAIGHTFLUSH 	= setdiff(SF, RSF) 		# straightflush ∖ royalstraightflush
 	ROYALSTRAIGHTFLUSH = RSF
 end
 
+
 # ╔═╡ f4a6d3c3-2a20-4d91-aa0c-3129a24d59f7
-length(ONEPAIR)
+# Assertions based on https://en.wikipedia.org/wiki/Poker_probability
+begin
+	@assert length(ONEPAIR) == 1_098_240
+	@assert length(TWOPAIR) == 123_552
+	@assert length(THREEOFAKIND) == 54_912
+	@assert length(STRAIGHT) == 10_200
+	@assert length(FLUSH) == 5_108
+	@assert length(FULLHOUSE) == 3_744
+	@assert length(FOUROFAKIND) == 624
+	@assert length(STRAIGHTFLUSH) == 36
+	@assert length(RSF) == 4
+end
 
 # ╔═╡ 85f03c53-337c-424f-a815-5f8206e7fabe
-length(TWOPAIR)
+
 
 # ╔═╡ a89bd7b4-4f1c-43be-a145-4195dcb88de1
-length(THREEOFAKIND)
+
 
 # ╔═╡ f3a7bee2-b967-4bcc-8da3-4be20d3e3cb8
-length(STRAIGHT)
+
 
 # ╔═╡ 673159aa-b639-4557-9b00-e776017ee4b3
-length(FLUSH)
+
 
 # ╔═╡ 948b7abd-c520-4643-83ee-9c51d3a0fcfa
-length(FULLHOUSE) # ska vara 3744??
+
 
 # ╔═╡ 3192dd4a-aa74-48d4-bc58-f5723c8da4cc
-length(FOUROFAKIND)
+
 
 # ╔═╡ 635a3366-af8e-4436-8d62-dd6e1e3ead6b
-length(STRAIGHTFLUSH)
+
 
 # ╔═╡ 63533bd6-011a-4722-8cfd-f05dc3cd3d39
-length(RSF)
+
 
 # ╔═╡ fb974b3c-305b-4c6c-80df-ba8a54bb2654
 md"

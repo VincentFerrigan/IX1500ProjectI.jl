@@ -4,7 +4,7 @@
 # - Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
 # - Assignment: Project 1
 # - Date: 2022-09-18
-# - Version: 0.6
+# - Version: 0.7
 
 module TaskA
 using Combinatorics
@@ -171,7 +171,7 @@ function hasfullhouse(cards)
     rankset = Set()
     for card ∈ cards push!(rankset, card.rank) end
     if length(rankset) > 2 return false end
-    return hastwopair(cards) && hasthreeofakind(cards)
+    return hastwopairs(cards) && hasthreeofakind(cards)
 end
 
 
