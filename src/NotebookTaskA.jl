@@ -20,6 +20,7 @@ end
 begin
 	include("TaskA.jl")
 	import .TaskA
+	#import TaskA
 end
 
 # ╔═╡ 084c07da-373f-11ed-0dc0-4552c95b6e50
@@ -88,6 +89,21 @@ md"
 #### Result
 "
 
+# ╔═╡ cc749c76-cc2c-4ef0-9b0b-f7c3c829968c
+md"
+##### Poker probability
+"
+
+# ╔═╡ 5aab6e98-ffc2-4178-bb52-438a236b0b7f
+md"
+##### Pre-flop
+"
+
+# ╔═╡ d37bd951-795f-40c6-9dbd-aae92bb486fa
+md"
+##### Flop
+"
+
 # ╔═╡ e604032f-d10f-424f-8be9-3953c8fa5bbe
 md"
 ### Texas hold 'em poker
@@ -114,167 +130,86 @@ md"
 ### Code
 "
 
-# ╔═╡ d03250ad-f9ae-4a24-b203-3f5834bc4d22
-# Collectionfunctions
-function handcollections(handcomb)
-    predict = Dict(
-        :onepair => filter(x -> TaskA.hasonepair(x), handcomb),
-        :twopairs => filter(x -> TaskA.hastwopairs(x), handcomb),
-        :threeofakind => filter(x -> TaskA.hasthreeofakind(x), handcomb),
-        :straight => filter(x -> TaskA.hasstraight(x), handcomb),
-        :flush => filter(x -> TaskA.hasflush(x), handcomb),
-        :fullhouse => filter(x -> TaskA.hasfullhouse(x), handcomb),
-        :fourofakind => filter(x -> TaskA.hasfourofakind(x), handcomb),
-        :straightflush => filter(x -> TaskA.hasstraightflush(x), handcomb),
-        :royalstraightflush => filter(x -> TaskA.hasroyalstraightflush(x), handcomb)
-        )
-	OP = predict[:onepair]
-	TP = predict[:twopairs]
-	TK = predict[:threeofakind]
-	S = predict[:straight]
-	F = predict[:flush]
-	FH = predict[:fullhouse]
-	FK = predict[:fourofakind]
-	SF = predict[:straightflush]
-	RSF = predict[:royalstraightflush]
-      
-	dict = Dict(
-		# onepair ∖ twopair ∖ threeofakind
-		"One Pair" 	=> setdiff(OP, TP, TK),
-		# twopair ∖ fullhouse
-		"Two Pairs"	=> setdiff(TP, FH),
-		# threeofakind ∖ fourofakind ∖ fullhouse
-		"Three of a kind" => setdiff(TK, FK, FH),
-		# straight ∖ straightflush
-		"Straight" => setdiff(S, SF),
-		# flush ∖ straightflush
-		"Flush"	=> setdiff(F, SF),
-		"Full house" => FH,
-		"Four of a kind" => FK,
-		# straightflush ∖ royalstraightflush
-		"Straight Flush" => setdiff(SF, RSF),
-		"Royal Straight Flush" => RSF
-)
-	return dict
-end
-
-# ╔═╡ 8b612d03-c8cb-4b77-8c70-c6c4f294c817
-# Helpfunctions for df "mapping"
-begin
-	sizeofset = x-> size(x)[1]
-	probofset52_5 = x-> size(x)[1]/binomial(52,5)
-end
-
 # ╔═╡ f411db9f-3477-4655-ad26-77f05d714e19
 md"
 #### Pre-flop
 "
 
-# ╔═╡ 8af1d236-bc00-4bcc-92bf-157042ab29b6
+# ╔═╡ fd4555e3-70aa-46af-b9c4-bbacef120c68
+# Helpfunctions for df "mapping"
 begin
-	deck = TaskA.fulldeck()
-	holecards = Vector(undef, 0)
-	push!(holecards, popat!(deck, rand(1:size(deck)[1])))
-	push!(holecards, popat!(deck, rand(1:size(deck)[1])))
+	sizeofset = x-> size(x)[1]
+	probofset52_5 = x-> size(x)[1]/binomial(52,5)
+	probofset50_5 = x-> size(x)[2]/binomil(50,5)
+	probofset50_3 = x-> size(x)[2]/binomial(50,3)
+	probofset47_2 = x-> size(x)[2]/binomial(47,2)
 end
 
-# ╔═╡ d7a67e38-1f4f-4aec-a4bc-b6d5f4c5f278
-# Assertions
+# ╔═╡ 1dd51e47-dae8-45db-8116-2529df17563d
 begin
-	@assert size(holecards)[1] == 2
-	@assert size(deck)[1] == 50
+	my_deck = TaskA.fulldeck()
+	my_holecards = TaskA.preflop!(my_deck)
+	my_preflop_hands = TaskA.preflop_combinations(my_holecards, my_deck)
+	
+	df_mypreflop = DataFrame(
+	:name => keys(my_preflop_hands) |> collect,
+	:sets => values(my_preflop_hands) |> collect,
+	:freq => values(my_preflop_hands) |> x -> sizeofset.(x) |> collect,
+	:prob => values(my_preflop_hands) |> x -> probofset52_5.(x) |> collect);
+end;
+
+# ╔═╡ 68c782d9-e77d-456c-acac-9e0f9453ab33
+md"The hole-cards are $my_holecards"
+
+# ╔═╡ 30a68226-7646-41ae-b1ba-64609a93db49
+let go
+	md"My hole-cards are $my_holecards"
+	sort(df_mypreflop,[:freq])
 end
-
-# ╔═╡ f4e8a483-3d9a-4c3f-83d7-cc3d86e2940a
-communitycomb = combinations(deck, 5) |> collect
-
-# ╔═╡ a6f2c2c1-3997-413f-8577-8457256877a4
-# throw two random cards away
-begin
-	foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
-	foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
-end
-
-# ╔═╡ e09c4611-6cdd-4b26-8d0a-1e4e97d38b67
-@assert size(communitycomb[1])[1] == 3
-
-# ╔═╡ 76ad00fb-313a-4af3-a45c-62aecce6f5b1
-preflophandcomb = map(x -> vcat(x, holecards), communitycomb)
-
-# ╔═╡ ee51d4ff-5a79-4b7f-b9bc-411996a30122
-preflop_hands = handcollections(preflophandcomb)
-
-# ╔═╡ 4930a89b-f627-4f9a-8b3e-218fd3f71387
-df_preflop = DataFrame(
-	#:id => keys(setofhands) |> collect |> x -> sort(x, by = y->[2]),
-	:name => keys(preflop_hands) |> collect,
-	#:supersets => values(setofhands) |> collect, # problem att de är i annan ordning
-	:sets => values(preflop_hands) |> collect,
-	:freq => values(preflop_hands) |> x -> sizeofset.(x) |> collect,
-	:prob => values(preflop_hands) |> x -> probofset52_5.(x) |> collect
-);
 
 # ╔═╡ d8cba9cb-ea8f-4f26-b452-7445d71be762
-sort(df_preflop,[:freq])
+sort(df_mypreflop,[:freq])
+
+# ╔═╡ 76791c9a-4e87-4500-bc54-46a094e87c51
+# Assertions
+begin
+	@assert size(my_holecards)[1] == 2
+	@assert size(my_deck)[1] == 50
+end
+
+# ╔═╡ fa6dd699-251a-4d84-8684-727788e9be62
+my_holecards
 
 # ╔═╡ e70d8bf0-85c9-4f7f-b90e-0f5f8ab14b8d
 md"
 #### Flop
 "
 
-# ╔═╡ 5be38f8f-f2fa-4767-aa8a-924ccc521578
-length(deck)
-
-# ╔═╡ 5943b25b-9151-4247-8833-9e25c1a93ed3
+# ╔═╡ d274370d-0de1-4903-b24e-6c579c8c1e26
 begin
-	threecommcards = Vector(undef, 0)
-	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
-	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
-	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
-end
+	my_commcards = TaskA.flop!(my_deck)
+	my_flophands = TaskA.flop_combinations(my_holecards, my_commcards, my_deck)
+	
+	df_myflop = DataFrame(
+	:name => keys(my_flophands) |> collect,
+	:sets => values(my_flophands) |> collect,
+	:freq => values(my_flophands) |> x -> sizeofset.(x) |> collect,
+	:prob => values(my_flophands) |> x -> probofset52_5.(x) |> collect)
+end;
 
-# ╔═╡ 77a06e64-d920-4b1f-b1e2-5163137da545
-# Assertions
-begin
-	@assert size(holecards)[1] == 2
-	@assert size(threecommcards)[1] == 3
-	@assert size(deck)[1] == 47
-end
-
-# ╔═╡ d2ed257a-e154-4181-9daf-5bf128494e89
-communitycomboftwo = combinations(deck, 2) |> collect
-
-# ╔═╡ 12c6520b-e280-4a5e-b9f4-a996db2c7c13
-communitycombflop = map(x -> vcat(x, threecommcards), communitycomboftwo)
-
-# ╔═╡ 1df9178a-0ba1-4965-8c7a-57f619372dd2
-# throw two random cards away
-begin
-	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
-	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
-end
-
-# ╔═╡ d04eb8a2-a2d2-41ee-93a9-adcc094db015
-@assert size(communitycombflop[1])[1] == 3
-
-# ╔═╡ 233e91cf-c078-4139-b60b-2cb0f6d5df16
-flophandcomb = map(x -> vcat(x, holecards), communitycombflop)
-
-# ╔═╡ ea374e9c-b482-48d9-9819-8fc313928524
-flop_hands = handcollections(flophandcomb)
-
-# ╔═╡ 14fa8806-b25a-485c-b5ff-7ea9bb60a7ff
-df_flop = DataFrame(
-	#:id => keys(setofhands) |> collect |> x -> sort(x, by = y->[2]),
-	:name => keys(flop_hands) |> collect,
-	#:supersets => values(setofhands) |> collect, # problem att de är i annan ordning
-	:sets => values(flop_hands) |> collect,
-	:freq => values(flop_hands) |> x -> sizeofset.(x) |> collect,
-	:prob => values(flop_hands) |> x -> probofset52_5.(x) |> collect
-);
+# ╔═╡ 1e2acbf4-22ca-4526-855d-63c1c68fa23c
+md"The hole-cards are $my_holecards and the three community cards are $my_commcards"
 
 # ╔═╡ abfd6318-28ea-4780-81ab-a231f0be8d89
-sort(df_flop,[:freq])
+sort(df_myflop,[:freq])
+
+# ╔═╡ 363a7ee8-dee1-4e90-b647-316ab86198bb
+# Assertions
+begin
+	@assert size(my_commcards)[1] == 3
+	@assert size(my_holecards)[1] == 2
+	@assert size(my_deck)[1] == 47
+end
 
 # ╔═╡ d73fffaf-25e4-4fd2-9ea7-ae863dd34109
 md"##### Assert that all is in order"
@@ -283,7 +218,7 @@ md"##### Assert that all is in order"
 const HANDCOMBINATIONS = combinations(TaskA.fulldeck(), 5) |> collect 
 
 # ╔═╡ 1ff7d2c7-ec32-4758-9055-faa8170c871e
-HANDS = handcollections(HANDCOMBINATIONS)
+HANDS = TaskA.handcollections(HANDCOMBINATIONS);
 
 # ╔═╡ 420345e9-d9ef-48da-97bf-83e80e22997e
 df_HANDS = DataFrame(
@@ -293,7 +228,7 @@ df_HANDS = DataFrame(
 	:sets => values(HANDS) |> collect,
 	:freq => values(HANDS) |> x -> sizeofset.(x) |> collect,
 	:prob => values(HANDS) |> x -> probofset52_5.(x) |> collect
-)
+);
 
 # ╔═╡ 743268d0-0098-412b-aebb-c28aeec29bae
 sort(df_HANDS,[:freq])
@@ -315,28 +250,6 @@ begin
 	@assert size(HANDS["Royal Straight Flush"])[1] == 4
 end
 
-# ╔═╡ 9365c11a-efe3-42b9-9221-b97010cf5ccc
-# ╠═╡ disabled = true
-#=╠═╡
-setofhands = TaskA.collectionofhands()
-  ╠═╡ =#
-
-# ╔═╡ 80a4b0a2-fcd8-41b1-aba5-e16800c6834c
-#=╠═╡
-# All sets
-begin
-	OP = setofhands[:onepair]
-	TP = setofhands[:twopairs]
-	TK = setofhands[:threeofakind]
-	S = setofhands[:straight]
-	F = setofhands[:flush]
-	FH = setofhands[:fullhouse]
-	FK = setofhands[:fourofakind]
-	SF = setofhands[:straightflush]
-	RSF = setofhands[:royalstraightflush]
-end
-  ╠═╡ =#
-
 # ╔═╡ 28199b17-3413-4cc6-983a-f0a13c05a641
 # ╠═╡ disabled = true
 #=╠═╡
@@ -350,90 +263,33 @@ $\lbrace \text{one pairs} \rbrace
 =#
   ╠═╡ =#
 
-# ╔═╡ 512c09cc-f892-49e6-a119-82b762f9dad4
-#=╠═╡
-# Difference
-begin
-	ONEPAIR 		= setdiff(OP, TP, TK) 	# onepair ∖ twopair ∖ threeofakind 
-	TWOPAIR 		= setdiff(TP, FH)		# twopair ∖ fullhouse
-	THREEOFAKIND 	= setdiff(TK, FK, FH)	# threeofakind ∖ fourofakind ∖ fullhouse
-	STRAIGHT 		= setdiff(S, SF)		# straight ∖ straightflush
-	FLUSH 			= setdiff(F, SF)		# flush ∖ straightflush
-	FULLHOUSE 		= FH
-	FOUROFAKIND 	= FK
-	STRAIGHTFLUSH 	= setdiff(SF, RSF) 		# straightflush ∖ royalstraightflush
-	ROYALSTRAIGHTFLUSH = RSF
-end
-  ╠═╡ =#
+# ╔═╡ 89888d73-e35e-4554-8a9e-767f0b288471
+#=
 
-# ╔═╡ f4a6d3c3-2a20-4d91-aa0c-3129a24d59f7
-#=╠═╡
-# Assertions based on https://en.wikipedia.org/wiki/Poker_probability
-begin
-	@assert size(ONEPAIR)[1]		== 1_098_240
-	@assert size(TWOPAIR)[1] 		== 123_552
-	@assert size(THREEOFAKIND)[1] 	== 54_912
-	@assert size(STRAIGHT)[1] 		== 10_200
-	@assert size(FLUSH)[1] 			== 5_108
-	@assert size(FULLHOUSE)[1] 		== 3_744
-	@assert size(FOUROFAKIND)[1] 	== 624
-	@assert size(STRAIGHTFLUSH)[1] 	== 36
-	@assert size(RSF)[1] 			== 4
-end
-  ╠═╡ =#
+# TaskA.jl
+# - Julia version: 1.8.0
+# - Author: Vincent Ferrigan <ferrigan@kth.se>
+# - Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
+# - Assignment: Project 1
+# - Date: 2022-09-19
+# - Version: 0.8
 
-# ╔═╡ c08ac38c-4149-46e8-acc2-0a6df4c59b7a
-#=╠═╡
-# New Dictionary with Frequency
-hand = Dict(
-	"One Pair" 	=> setdiff(OP, TP, TK),	# onepair ∖ twopair ∖ threeofakind 
-	"Two Pairs"	=> setdiff(TP, FH),		# twopair ∖ fullhouse
-	"Three of a kind" => setdiff(TK, FK, FH), # threeofakind ∖ fourofakind ∖ fullhouse
-	"Straight" => setdiff(S, SF),	# straight ∖ straightflush
-	"Flush"	=> setdiff(F, SF),	# flush ∖ straightflush
-	"Full house" => FH,
-	"Four of a kind" => FK,
-	"Straight Flush" => setdiff(SF, RSF), # straightflush ∖ royalstraightflush
-	"Royal Straight Flush" => RSF
-)
-  ╠═╡ =#
+# istället för att hasfunktionerna avläser 7 kort så kan den 
+# ta emot två vectorer. ..en hole och en community(?)
+# måste holekorten alltid räknas in? båda eller en?
 
-# ╔═╡ ae01dd3f-495d-429f-ba68-4bd933e23bde
-# ╠═╡ disabled = true
-#=╠═╡
-#begin
-	# Helpfunctions for df "mapping"
-#	sizeofset = x-> size(x)[1]
-#	probofset = x-> size(x)[1]/binomial(52,5)
-#end
-  ╠═╡ =#
-
-# ╔═╡ 3192dd4a-aa74-48d4-bc58-f5723c8da4cc
-#=╠═╡
-# men om setofhands och hand använder samma nyckel? då borde det väl gå????
-
-df = DataFrame(
-	#:id => keys(setofhands) |> collect |> x -> sort(x, by = y->[2]),
-	:name => keys(hand) |> collect,
-	#:supersets => values(setofhands) |> collect, # problem att de är i annan ordning
-	:sets => values(hand) |> collect,
-	:freq => values(hand) |> x -> sizeofset.(x) |> collect,
-	:prob => values(hand) |> x -> probofset52_5.(x) |> collect
-)
-  ╠═╡ =#
-
-# ╔═╡ fb974b3c-305b-4c6c-80df-ba8a54bb2654
-md"
-ATT UPPDATERA!! med rätt version. Kan man kanske läsa in det som text istället? Så det alltid håller sig uppdaterat? Eller ska jag bara klippa in hela modulen som riktig kod isället för att importa den??
-
-```
 module TaskA
+
 using Combinatorics
 using Random
 import Base.show
 import Base.==
 
-export collectionofhands, fulldeck, Card
+export Card, fulldeck, preflop!, preflop_combinations, 
+flop!, flop_combinations, handcollections, prob_df, prob_df!,
+hasonepair, hastwopairs, hasthreeofakind, hasstraight, 
+hasflush, hasfullhouse, hasfourofakind,
+hasstraightflush, hasroyalstraightflush, collectionofhands
 
 const RANKS = [:ace, :two, :three, :four, :five, :six, :seven, :eight, :nine, :ten, :jack, :queen, :king]
 const SUITS = [:♣, :♢, :♡, :♠]
@@ -445,8 +301,8 @@ struct Card
 
     function Card(rank::Symbol, suit::Symbol)
         # short-circuit conditionals.
-        rank in RANKS || throw(ArgumentError(\"invalid rank: $rank\"))
-        suit in SUITS || throw(ArgumentError(\"invalid suit: $suit\"))
+        rank in RANKS || throw(ArgumentError("invalid rank: $rank"))
+        suit in SUITS || throw(ArgumentError("invalid suit: $suit"))
         new(rank, suit)
     end
 end
@@ -473,7 +329,7 @@ function fulldeck()
     return deck
 end
 
-function hasonepair(cards::Vector{Card})
+function hasonepair(cards)
     # must exclude two pairs, three of a kind and four of a kind
     # short-circuit return condition
     n = length(cards)
@@ -592,7 +448,7 @@ function hasfullhouse(cards)
     rankset = Set()
     for card ∈ cards push!(rankset, card.rank) end
     if length(rankset) > 2 return false end
-    return hasonepair(cards) && hasthreeofakind(cards)
+    return hastwopairs(cards) && hasthreeofakind(cards)
 end
 
 
@@ -636,7 +492,7 @@ function hasroyalstraightflush(cards)
         push!(rankset, card.rank)
     end
 
-   return hasstraightflush(cards) && (:ace in rankset || :king in rankset)
+   return hasstraightflush(cards) && :ace in rankset && :king in rankset
 end
 
 # OM TID FINNS
@@ -658,28 +514,125 @@ function highcard(cards)
     end
 end
     
-
-# collections
-const HOLECOMB = combinations(fulldeck(), 2) |> collect
-const COMMUNITYCOMB = combinations(fulldeck(), 3) |> collect 
-const HANDCOMB = combinations(fulldeck(), 5) |> collect 
-
-function collectionofhands()
-    dict = Dict(
-        :onepair => filter(x -> hasonepair(x), HANDCOMB),
-        :twopairs => filter(x -> hastwopairs(x), HANDCOMB),
-        :threeofakind => filter(x -> hasthreeofakind(x), HANDCOMB),
-        :straight => filter(x -> hasstraight(x), HANDCOMB),
-        :flush => filter(x -> hasflush(x), HANDCOMB),
-        :fullhouse => filter(x -> hasfullhouse(x), HANDCOMB),
-        :fourofakind => filter(x -> hasfourofakind(x), HANDCOMB),
-        :straightflush => filter(x -> hasstraightflush(x), HANDCOMB),
-        :royalstraightflush => filter(x -> hasroyalstraightflush(x), HANDCOMB)
-        )
-        return dict
+\""\"
+preflop!(deck)
+modifies deck and returns holecards
+\""\"
+function preflop!(deck)
+	# deck = TaskA.fulldeck()
+	holecards = Vector(undef, 0)
+	push!(holecards, popat!(deck, rand(1:size(deck)[1])))
+	push!(holecards, popat!(deck, rand(1:size(deck)[1])))
+    return holecards
 end
-```
-"
+
+function preflop_combinations(holecards, deck)
+    communitycomb = combinations(deck, 5) |> collect
+    # throw two random cards
+    foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
+	foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
+    preflophandcomb = map(x -> vcat(x, holecards), communitycomb)
+    preflop_hands = handcollections(preflophandcomb)
+    return preflop_hands
+end
+
+\""\"
+flop(deck)
+receives a deck of 50 cards
+modifies deck and returns a vector of three community cards
+"""
+function flop!(deck)
+    threecommcards = Vector(undef, 0)
+	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
+	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
+	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
+    return threecommcards
+end
+
+function flop_combinations(holecards, threecommcards, deck)
+    communitycomboftwo = combinations(deck, 2) |> collect
+    communitycombflop = map(x -> vcat(x, threecommcards), communitycomboftwo)
+    
+    # throw two random cards away
+	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
+	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
+    flophandcomb = map(x -> vcat(x, holecards), communitycombflop)
+    flop_hands = handcollections(flophandcomb)
+    return flop_hands
+end
+
+
+# Collectionfunctions
+
+function handcollections(handcomb)
+    predict = Dict(
+        :onepair => filter(x -> hasonepair(x), handcomb),
+        :twopairs => filter(x -> hastwopairs(x), handcomb),
+        :threeofakind => filter(x -> hasthreeofakind(x), handcomb),
+        :straight => filter(x -> hasstraight(x), handcomb),
+        :flush => filter(x -> hasflush(x), handcomb),
+        :fullhouse => filter(x -> hasfullhouse(x), handcomb),
+        :fourofakind => filter(x -> hasfourofakind(x), handcomb),
+        :straightflush => filter(x -> hasstraightflush(x), handcomb),
+        :royalstraightflush => filter(x -> hasroyalstraightflush(x), handcomb)
+        )
+	OP = predict[:onepair]
+	TP = predict[:twopairs]
+	TK = predict[:threeofakind]
+	S = predict[:straight]
+	F = predict[:flush]
+	FH = predict[:fullhouse]
+	FK = predict[:fourofakind]
+	SF = predict[:straightflush]
+	RSF = predict[:royalstraightflush]
+      
+	dict = Dict(
+		# onepair ∖ twopair ∖ threeofakind
+		"One Pair" 	=> setdiff(OP, TP, TK),
+		# twopair ∖ fullhouse
+		"Two Pairs"	=> setdiff(TP, FH),
+		# threeofakind ∖ fourofakind ∖ fullhouse
+		"Three of a kind" => setdiff(TK, FK, FH),
+		# straight ∖ straightflush
+		"Straight" => setdiff(S, SF),
+		# flush ∖ straightflush
+		"Flush"	=> setdiff(F, SF),
+		"Full house" => FH,
+		"Four of a kind" => FK,
+		# straightflush ∖ royalstraightflush
+		"Straight Flush" => setdiff(SF, RSF),
+		"Royal Straight Flush" => RSF
+)
+	return dict
+end
+
+#df
+
+function prob_df!(df, handcombinations, n, k)
+    sizeof = x-> size(x)[1]
+    probof = x-> size(x)[1]/binomial(n,k)
+    
+    df.:name => keys(handcombinations) |> collect
+	df.:sets => values(handcombinations) |> collect
+	df.:freq => values(handcombinations) |> x -> sizeof.(x) |> collect
+	df.:prob => values(handcombinations) |> x -> probof.(x) |> collect
+
+end
+function prob_df(handcombinations, n, k)
+    sizeof = x-> size(x)[1]
+    probof = x-> size(x)[1]/binomial(n,k)
+    
+    df = DataFrame(
+	:name => keys(handcombinations) |> collect,
+	:sets => values(handcombinations) |> collect,
+	:freq => values(handcombinations) |> x -> sizeof.(x) |> collect,
+	:prob => values(handcombinations) |> x -> probof.(x) |> collect
+    )
+    return df
+end
+
+end # module
+=#
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
@@ -1691,53 +1644,38 @@ version = "1.4.1+0"
 # ╔═╡ Cell order:
 # ╠═084c07da-373f-11ed-0dc0-4552c95b6e50
 # ╟─c822233a-10b8-4a1d-a2d7-e5cbd42fb1db
-# ╠═6c2650b4-46c6-4527-80a4-656c319112e3
+# ╟─6c2650b4-46c6-4527-80a4-656c319112e3
 # ╟─4b2d5fa8-0824-4be4-9c7b-c773de42490b
 # ╟─cdb5b5d9-7cbe-4a1a-9741-38966ade539e
-# ╠═acbe1325-4110-455b-ab22-bc7b6a3de2c9
+# ╟─acbe1325-4110-455b-ab22-bc7b6a3de2c9
 # ╟─5f09254a-8662-4f4d-9996-f817579d64df
 # ╟─15c94fd1-cc81-4da1-aab1-95b0731db62d
+# ╟─cc749c76-cc2c-4ef0-9b0b-f7c3c829968c
 # ╠═743268d0-0098-412b-aebb-c28aeec29bae
+# ╟─5aab6e98-ffc2-4178-bb52-438a236b0b7f
+# ╟─68c782d9-e77d-456c-acac-9e0f9453ab33
+# ╠═30a68226-7646-41ae-b1ba-64609a93db49
 # ╠═d8cba9cb-ea8f-4f26-b452-7445d71be762
+# ╠═d37bd951-795f-40c6-9dbd-aae92bb486fa
+# ╠═1e2acbf4-22ca-4526-855d-63c1c68fa23c
 # ╠═abfd6318-28ea-4780-81ab-a231f0be8d89
 # ╟─e604032f-d10f-424f-8be9-3953c8fa5bbe
 # ╟─abc6d425-985c-47d4-8c3c-b63b93646eba
-# ╠═d03250ad-f9ae-4a24-b203-3f5834bc4d22
-# ╠═8b612d03-c8cb-4b77-8c70-c6c4f294c817
 # ╟─f411db9f-3477-4655-ad26-77f05d714e19
-# ╠═8af1d236-bc00-4bcc-92bf-157042ab29b6
-# ╠═d7a67e38-1f4f-4aec-a4bc-b6d5f4c5f278
-# ╠═f4e8a483-3d9a-4c3f-83d7-cc3d86e2940a
-# ╠═a6f2c2c1-3997-413f-8577-8457256877a4
-# ╠═e09c4611-6cdd-4b26-8d0a-1e4e97d38b67
-# ╠═76ad00fb-313a-4af3-a45c-62aecce6f5b1
-# ╠═ee51d4ff-5a79-4b7f-b9bc-411996a30122
-# ╠═4930a89b-f627-4f9a-8b3e-218fd3f71387
+# ╠═fd4555e3-70aa-46af-b9c4-bbacef120c68
+# ╠═1dd51e47-dae8-45db-8116-2529df17563d
+# ╠═76791c9a-4e87-4500-bc54-46a094e87c51
+# ╠═fa6dd699-251a-4d84-8684-727788e9be62
 # ╠═e70d8bf0-85c9-4f7f-b90e-0f5f8ab14b8d
-# ╠═5be38f8f-f2fa-4767-aa8a-924ccc521578
-# ╠═5943b25b-9151-4247-8833-9e25c1a93ed3
-# ╠═77a06e64-d920-4b1f-b1e2-5163137da545
-# ╠═d2ed257a-e154-4181-9daf-5bf128494e89
-# ╠═12c6520b-e280-4a5e-b9f4-a996db2c7c13
-# ╠═1df9178a-0ba1-4965-8c7a-57f619372dd2
-# ╠═d04eb8a2-a2d2-41ee-93a9-adcc094db015
-# ╠═233e91cf-c078-4139-b60b-2cb0f6d5df16
-# ╠═ea374e9c-b482-48d9-9819-8fc313928524
-# ╠═14fa8806-b25a-485c-b5ff-7ea9bb60a7ff
+# ╠═d274370d-0de1-4903-b24e-6c579c8c1e26
+# ╠═363a7ee8-dee1-4e90-b647-316ab86198bb
 # ╠═d73fffaf-25e4-4fd2-9ea7-ae863dd34109
 # ╠═e5247aa3-ee4a-4a04-bdfb-184d574e2728
 # ╠═1ff7d2c7-ec32-4758-9055-faa8170c871e
 # ╠═420345e9-d9ef-48da-97bf-83e80e22997e
 # ╠═f2a1da0b-cdc7-4e25-bdfc-44a2f9399c9d
 # ╠═3e6cfd15-379f-42f9-9c7e-7f126313a5a1
-# ╠═9365c11a-efe3-42b9-9221-b97010cf5ccc
-# ╠═80a4b0a2-fcd8-41b1-aba5-e16800c6834c
 # ╠═28199b17-3413-4cc6-983a-f0a13c05a641
-# ╠═512c09cc-f892-49e6-a119-82b762f9dad4
-# ╠═f4a6d3c3-2a20-4d91-aa0c-3129a24d59f7
-# ╠═c08ac38c-4149-46e8-acc2-0a6df4c59b7a
-# ╠═ae01dd3f-495d-429f-ba68-4bd933e23bde
-# ╠═3192dd4a-aa74-48d4-bc58-f5723c8da4cc
-# ╟─fb974b3c-305b-4c6c-80df-ba8a54bb2654
+# ╠═89888d73-e35e-4554-8a9e-767f0b288471
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002

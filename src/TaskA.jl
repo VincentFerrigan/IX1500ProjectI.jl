@@ -16,10 +16,11 @@ using Random
 import Base.show
 import Base.==
 
-export collectionofhands, fulldeck, Card, hasonepair, hastwopairs,
-hasthreeofakind, hasstraight, hasflush, hasfullhouse, hasfourofakind,
-hasstraightflush, hasroyalstraightflush
-
+export Card, fulldeck, preflop!, preflop_combinations, 
+flop!, flop_combinations, handcollections, prob_df, prob_df!,
+hasonepair, hastwopairs, hasthreeofakind, hasstraight, 
+hasflush, hasfullhouse, hasfourofakind,
+hasstraightflush, hasroyalstraightflush, collectionofhands
 
 const RANKS = [:ace, :two, :three, :four, :five, :six, :seven, :eight, :nine, :ten, :jack, :queen, :king]
 const SUITS = [:♣, :♢, :♡, :♠]
@@ -244,12 +245,136 @@ function highcard(cards)
     end
 end
     
+"""
+preflop!(deck)
+modifies deck and returns holecards
+"""
+function preflop!(deck)
+	# deck = TaskA.fulldeck()
+	holecards = Vector(undef, 0)
+	push!(holecards, popat!(deck, rand(1:size(deck)[1])))
+	push!(holecards, popat!(deck, rand(1:size(deck)[1])))
+    return holecards
+end
 
+function preflop_combinations(holecards, deck)
+    communitycomb = combinations(deck, 5) |> collect
+    # throw two random cards
+    foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
+	foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
+    preflophandcomb = map(x -> vcat(x, holecards), communitycomb)
+    preflop_hands = handcollections(preflophandcomb)
+    return preflop_hands
+end
+
+"""
+flop(deck)
+receives a deck of 50 cards
+modifies deck and returns a vector of three community cards
+"""
+function flop!(deck)
+    threecommcards = Vector(undef, 0)
+	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
+	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
+	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
+    return threecommcards
+end
+
+function flop_combinations(holecards, threecommcards, deck)
+    communitycomboftwo = combinations(deck, 2) |> collect
+    communitycombflop = map(x -> vcat(x, threecommcards), communitycomboftwo)
+    
+    # throw two random cards away
+	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
+	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
+    flophandcomb = map(x -> vcat(x, holecards), communitycombflop)
+    flop_hands = handcollections(flophandcomb)
+    return flop_hands
+end
+
+
+# Collectionfunctions
+
+function handcollections(handcomb)
+    predict = Dict(
+        :onepair => filter(x -> hasonepair(x), handcomb),
+        :twopairs => filter(x -> hastwopairs(x), handcomb),
+        :threeofakind => filter(x -> hasthreeofakind(x), handcomb),
+        :straight => filter(x -> hasstraight(x), handcomb),
+        :flush => filter(x -> hasflush(x), handcomb),
+        :fullhouse => filter(x -> hasfullhouse(x), handcomb),
+        :fourofakind => filter(x -> hasfourofakind(x), handcomb),
+        :straightflush => filter(x -> hasstraightflush(x), handcomb),
+        :royalstraightflush => filter(x -> hasroyalstraightflush(x), handcomb)
+        )
+	OP = predict[:onepair]
+	TP = predict[:twopairs]
+	TK = predict[:threeofakind]
+	S = predict[:straight]
+	F = predict[:flush]
+	FH = predict[:fullhouse]
+	FK = predict[:fourofakind]
+	SF = predict[:straightflush]
+	RSF = predict[:royalstraightflush]
+      
+	dict = Dict(
+		# onepair ∖ twopair ∖ threeofakind
+		"One Pair" 	=> setdiff(OP, TP, TK),
+		# twopair ∖ fullhouse
+		"Two Pairs"	=> setdiff(TP, FH),
+		# threeofakind ∖ fourofakind ∖ fullhouse
+		"Three of a kind" => setdiff(TK, FK, FH),
+		# straight ∖ straightflush
+		"Straight" => setdiff(S, SF),
+		# flush ∖ straightflush
+		"Flush"	=> setdiff(F, SF),
+		"Full house" => FH,
+		"Four of a kind" => FK,
+		# straightflush ∖ royalstraightflush
+		"Straight Flush" => setdiff(SF, RSF),
+		"Royal Straight Flush" => RSF
+)
+	return dict
+end
+
+#df
+
+function prob_df!(df, handcombinations, n, k)
+    sizeof = x-> size(x)[1]
+    probof = x-> size(x)[1]/binomial(n,k)
+    
+    df.:name => keys(handcombinations) |> collect
+	df.:sets => values(handcombinations) |> collect
+	df.:freq => values(handcombinations) |> x -> sizeof.(x) |> collect
+	df.:prob => values(handcombinations) |> x -> probof.(x) |> collect
+
+end
+function prob_df(handcombinations, n, k)
+    sizeof = x-> size(x)[1]
+    probof = x-> size(x)[1]/binomial(n,k)
+    
+    df = DataFrame(
+	:name => keys(handcombinations) |> collect,
+	:sets => values(handcombinations) |> collect,
+	:freq => values(handcombinations) |> x -> sizeof.(x) |> collect,
+	:prob => values(handcombinations) |> x -> probof.(x) |> collect
+    )
+    return df
+end
+# helpfunctions to mapping
+# sizeofset = x-> size(x)[1]
+# probofset52_5 = x-> size(x)[1]/binomial(52,5)
+# probofset50_5 = x-> size(x)[2]/binomil(50,5)
+# probofset50_3 = x-> size(x)[2]/binomial(50,3)
+# probofset47_2 = x-> size(x)[2]/binomial(47,2)
+
+# gamla men som jag de facto använder
 # collections
 const HOLECOMB = combinations(fulldeck(), 2) |> collect
 const COMMUNITYCOMB = combinations(fulldeck(), 3) |> collect 
 const HANDCOMB = combinations(fulldeck(), 5) |> collect 
 
+# Collectionfunctions
 function collectionofhands()
     dict = Dict(
         :onepair => filter(x -> hasonepair(x), HANDCOMB),
@@ -264,6 +389,7 @@ function collectionofhands()
         )
         return dict
 end
+
 
 # tests
 # h1p = filter(x -> hasonepair(x), HANDCOMB)
