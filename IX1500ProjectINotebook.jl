@@ -4,27 +4,53 @@
 using Markdown
 using InteractiveUtils
 
-# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
-macro bind(def, element)
-    quote
-        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
-        local el = $(esc(element))
-        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
-        el
-    end
-end
-
-# ╔═╡ 235f2952-6853-4f53-9b93-1bc55af079e7
+# ╔═╡ 3c889854-4e74-4136-aa45-0a3c7430df61
 # Packages
 begin
 	#using InteractiveUtils
 	using PlutoUI
 	using Plots
-	using Combinatorics
 end
 
 # ╔═╡ 44fd5f71-c347-4754-a50b-09f43b615e47
 ### A ProjectOneGroup17.jl notebook ###
+
+# ╔═╡ 7d3d76b4-a16b-4f86-bb72-6e489edd243e
+md"
+# PROJECT-stuff _(To be disabled from the report)_
+## Open Issues
+### Pluto
+- How do I add none code? 
+*Well, just use Markdown with md\" ...\"*
+
+- How do I add keybindings?
+- How do I spellcheck with LT?
+
+## Info & tutorials
+
+### Regular Expressions in Julia
+- [GeeksforGeeks ion regex in Julia](https://www.geeksforgeeks.org/regular-expressions-in-julia/)
+- [Julialangs strings doc](https://docs.julialang.org/en/v1/manual/strings/)
+- [Derek Banas REGEX Turorial](https://www.youtube.com/watch?v=DRR9fOXkfRE&list=PLFA4F2FDD28D0C40E)
+
+### Julia & Pluto
+* [JULIA TUTORIAL at new Think Tank, Derek Bananas](https://www.newthinktank.com/2018/10/julia-tutorial/)
+* [MOOC course](https://syl1.gitbook.io/julia-language-a-concise-tutorial/)
+* [RIP Tutorial](https://riptutorial.com/julia-lang)
+* [CS Lectures](https://www.cs.mcgill.ca/~dprecup/courses/IntroCS/Lectures/)
+* [Julia Talk](https://www.talkjulia.com/)
+* [Combinatorics](https://juliamath.github.io/Combinatorics.jl/dev/)
+* [Julia Language Database JuliaDB - YouTube](https://www.youtube.com/watch?v=pv5zfIs2lyU&list=PLsu0TcgLDUiLfwJipaXOBRqwqZlT4Atfk)
+* [Julia for simple medical statistical analysis](https://www.youtube.com/watch?v=4nPmKG_f8-M&list=PLsu0TcgLDUiIznEhN165XmykqyLgzwY0Y)
+
+### Markdown
+* [markdown guide](https://www.markdownguide.org/)
+* [markdown cheat-sheet](https://www.markdownguide.org/cheat-sheet/)
+
+### Poker
+* [Hand rankings](https://www.pokerstars.se/en/poker/games/rules/hand-rankings/)
+* [Texas hold'em](https://www.pokerstars.se/en/poker/games/texas-holdem/)
+"
 
 # ╔═╡ d14e9714-3365-11ed-1125-7be966581a61
 md"
@@ -34,13 +60,16 @@ md"
     Date: 2022-09-13
     Version: 0.1
     Vincent Ferrigan, ferrigan@kth.se
-    Martin Mellqvist Ekberg, martme@kth.se
+    Name 2, name2@kth.se
 "
+
+# ╔═╡ d34338c7-b02d-4290-b3e4-212373278cb1
+
 
 # ╔═╡ fa06cb75-cef4-48c7-a920-27be6d51f7af
 md"
 ## Task A
-### Summary
+### Summery
 #### Task
 In the Texas hold 'em poker game every player gets just two cards (hole cards),
 while the best hand is determined by the combination of any five cards chosen
@@ -106,8 +135,8 @@ end
 
 # ╔═╡ dd33dca5-d435-41bc-afa8-b8d393aed7cd
 md"
-## Task B
-### Summary
+## Task A
+### Summery
 #### Task
 The birthday paradox is that the probability of two persons sharing the same birthday in a
 group, exceeds 50%, when the group consists of only 23 people.
@@ -120,229 +149,9 @@ group, exceeds 50%, when the group consists of only 23 people.
 * Simulate the birthday paradox repeatedly and calculate the average probability for different values of N . Draw graphs and compare to the calculated versions above. Conclusions?
 "
 
-# ╔═╡ ace97548-f911-4727-8318-79aac3e1ef0d
+# ╔═╡ c952bcf0-a966-44f5-8430-7edf28f7288b
 md"
 #### Result
-
-To begin with we have to make a few assumptions:
-
-1. There are *always* 365 days in a year (i.e. we ignore leap years)
-2. Every birthday is *equally* likely
-3. There are *no dependencies* between birthdays (we discount twins, triplets etc)
-4. The set of people $N$ is *completely random*
-
-##### N people in the room
-
-To begin with we have to somehow derive a formula for calculating the probability that there is a match between the birthdays of two people out of the $N$ people in the room.
-
-If we can caluclate the probability of no two people with matching birthdays existing, then we can subtract that from $1$ to get the probability of two people sharing a birthday.
-
-Using combinatorics we can calculate the probability of two people not sharing a birthday by first calculating the number of outcomes where no two people share a birthday $A$. We can then calculate the total number of possible outcomes $B$.
-
-This gives us:
-
-$P = {A \over B}$
-
-The number of outcomes, where no two people share a birthday, is given by the number of permutations without repetition:
-
-${365!\over (365-N)!}$
-
-The total number of outcomes is given by the the number of permutations with repetition:
-
-$365^N$
-
-Combining these gives:
-
-${{365!\over (365-N)!} \over 365^N} = {365!\over 365^N(365-N)!}$
-
-Subtract from 1:
-
-$P(N) = 1 - {365!\over 365^N(365-N)!}$
-
-Calculating for N=23 give us:
-"
-
-# ╔═╡ b14ed635-d84c-4a3d-87c1-c190bcb5d108
-md"
-Which is the around 50% probability that we should get.
-
-If we now instead solve for N = 40 we get:
-"
-
-# ╔═╡ d8016d78-b935-4b0e-a4c3-7b2bb186638f
-md"
-##### Only comparing one person
-
-If we now instead want to see what the probability of someone sharing a birthday with us specifically we will have to use a different method.
-
-With the same assumptions as above we have the probability of one person sharing a birthday with us can be approximated with:
-
-${1 \over 365}$
-
-However to calculate the probability for $N$ people we can't just multiply this formula by $N$. Like above we can calculate the number of outcomes where there is no match and the total number of possible outcomes and subtract the quotient of those from 1.
-
-This gives us a base probability of
-
-$1-{364 \over 365}$
-
-We can extend this to $N$ comparisons with permutations with repetetion giving us:
-
-$1-\Bigl({364 \over 365}\Bigl)^N$
-
-Comparing this with the approximative formula above, and with $N=1$ give us:
-"
-
-# ╔═╡ 28f86fad-f649-452e-a931-111b7abae327
-md"**Approximative:**"
-
-# ╔═╡ 68f24a89-8329-4c78-9019-20b995a4ceca
-1/365
-
-# ╔═╡ 81930122-7292-4a91-8686-7f5124b4bb3b
-md"**Combinatoric:**"
-
-# ╔═╡ 8decc52c-8c6f-438f-aa81-7d7977b1e458
-1-(364/365)
-
-# ╔═╡ 8925b8a5-9dcf-4463-bbe1-14aa820a3dc4
-md"
-As can be seen the difference here is miniscule, but what happens if we increase N for both our combinatoric formula above and for multiplicative version of the approximative as shown below:
-
-$N \cdot {1 \over 365}$
-
-For $N = 5$
-"
-
-# ╔═╡ c90bb186-bd29-4827-be02-74f016d225f1
-md"**Approximative:**"
-
-# ╔═╡ 7fe8487f-0754-4292-a864-d4a7217da773
-5(1/365)
-
-# ╔═╡ f4e39beb-b88e-4851-b469-415796ffbf29
-md"**Combinatoric:**"
-
-# ╔═╡ 3c2ec51e-09cf-4753-8f5b-4031f85f403c
-1-((364/365)^5)
-
-# ╔═╡ 0934feee-3dcb-47b6-b695-a7e84e5e6413
-md"Still close but the difference is more pronounced let's see what happens in the birthday paradox situation of $N=23$"
-
-# ╔═╡ 38c38a2c-83f2-4901-b7f1-6fe06d766b09
-md"**Approximative:**"
-
-# ╔═╡ 3ab8ea7b-b95f-4341-9de4-340d01a37a6d
-23(1/365)
-
-# ╔═╡ 060cbb65-46f2-455c-ac8b-f26390f30db9
-md"**Combinatoric:**"
-
-# ╔═╡ 86573f03-7a57-4262-9a26-babe47b485c3
-1-((364/365)^23)
-
-# ╔═╡ 199bd2a5-a248-4f4f-bece-48e4904a004b
-md"We will make two final tests one for $N=40$ which was calculated for the birthday paradox situation above and one for $N=365$ because it will give us an interesting result."
-
-# ╔═╡ 48abcd9f-bde5-4ff3-b5f2-d346574b0f39
-md"For $N=40:$"
-
-# ╔═╡ a134b0ab-5e29-4338-8951-5fba51ab63cb
-md"**Approximative:**"
-
-# ╔═╡ 5bbbc1b5-54e1-498c-877c-fc2d1f792077
-40(1/365)
-
-# ╔═╡ fbf85183-f818-433a-9127-24d0edb2236e
-md"**Combinatoric:**"
-
-# ╔═╡ 6e27aa7e-aea1-49fc-91ab-c79ebe3c4ca0
-1-((364/365)^40)
-
-# ╔═╡ eba34638-afab-43fd-adc7-54b32a7f87dd
-md"For $N=365:$"
-
-# ╔═╡ d31fa0cf-737c-4fa8-ac91-150f26381d83
-md"**Approximative:**"
-
-# ╔═╡ 357d80bd-a1e6-41a0-aa18-b6ba1141a8e2
-365(1/365)
-
-# ╔═╡ 3f47d1bd-69b7-4e80-817f-616f99469334
-md"**Combinatoric:**"
-
-# ╔═╡ 782642df-2780-4c5e-84e2-8c901adc8af3
-1-((364/365)^365)
-
-# ╔═╡ 7337465f-949f-40af-872e-ef9e2d9238bc
-md"Here we can see something interesting. First of all we see that the difference between the two methods become more and more pronounced as $N$ increases. Which we can experiment further with the comparisons by testing for more values of $N$:"
-
-# ╔═╡ 083ccec4-9254-4ee1-a038-0c797549c3ec
-@bind g Slider(10:1000)
-
-# ╔═╡ 0d8ae0ea-2726-4222-b1b4-f53fb35d181e
-N = g
-
-# ╔═╡ 8ddd9c39-b9fd-478f-87fb-a468aa1b8592
-md"**Approximative:**"
-
-# ╔═╡ 20a92964-0028-4939-b0ac-05c8adf19543
-N*(1/365)
-
-# ╔═╡ f0054555-7f0c-4c4a-a469-f44f816fa7ed
-md"**Combinatoric:**"
-
-# ╔═╡ 327de52f-16fc-4144-a5c7-f9813a10b8c2
-1-((364/365)^N)
-
-# ╔═╡ 12e1d9cb-1bf0-4015-ada7-a7fe5822f639
-md"**Difference:**"
-
-# ╔═╡ 982bc73b-e95a-47ab-8c9f-ef5497fec833
-(N*(1/365))-(1-((364/365)^N))
-
-# ╔═╡ 65ec3e02-1d7d-4fdb-a617-df3289b6639a
-md"But more importantly, once we reach the same $N$ as there is possible outcomes the approximative calculations gives us a 100% probability.
-
-Intuitively we can see that this is wrong. No matter how many people we have (once again given previous assumptions) there should be a non-zero probability that no one shares your birthday. In 365 people we could have a situation where everyone was born the day after you for an example. The odds are astronomical, but they do exist.
-
-Now it's easy to see that this calculation is much different from the one in the birthday paradox. The main reason being that we're only comparing one person to the rest rather than comparing everyone to everyone. This is why we get approximately 50% probability in one case and just over 6% in the other."
-
-# ╔═╡ 835cf573-edc9-4abe-bb79-7d18fe262279
-md"
-##### Simulation
-
-For the simulation we assign random numbers $[1, 365]$ to a vector of length $N$. We then check for duplicates and if we find one we increment a counter for the number of hits (i.e. simulations with duplicates) found. We do these simulation $k$ times. Once we're done we can return:
-
-$P(N)={hits\over k}$
-
-For high enough values of $k$ this should start to approximated the calculated probability.
-
-Shown below is a graph of both the calculated probability and the actual results with the ability to vary $k$ from 10 to 500.
-"
-
-# ╔═╡ 0708f674-8218-4898-8b27-91be34ac6b1a
-@bind u Slider(10:500)
-
-# ╔═╡ c03577d7-e288-46bc-892d-7ae7d58ff36c
-k=u
-
-# ╔═╡ 27974177-5f50-4b1c-9b5a-18b0e30808aa
-md"
-##### Conclusions
-
-The birthday paradox unintuitive results bear out in both the calculations and the simulation. When we compared the result of our calculation for just one comparison to the rest of the $N$ people we could see one reason why this seems so wrong at a first glance: we simple are not used to doing comparisons this way. The second issue is that even if we understand the number of comparisons, non-linear growth is less obvious and natural to us. It's easy to assume that in a room with 23 people, the chance of two people sharing a birthday as being 23 times higher than if we just compare two people alone.
-
-We must however take the assumptions we made into consideration before we state that the calculated probability is an exact description of reality. It is unlikely that all birthdays are truly random and equally likely and even if they are, we could still get enough variation to slightly skew the results. 
-
-We didn't consider twins, triplets etc. which in most cases share a birthday and can be assumed to be more likely to share any given room than any two (or three, four...) other people sharing a birthday.
-
-Leap years will also skew the results. People born on the 29th of February are much more unlikely to share a birthday with someone else.
-
-Finally we need to account for possibilities of selection affecting the result. While most rooms can be probably be safely considered to be as random, we still need to consider the possibility.
-
-While these things do have a chance to affect the actual reality, in most cases the results will probably be close enough that you can rely on it.
-
-One thought that occured as we did this assignment was that at any large enough birthday party, chances are good that another person also has a birthday (though here it's worth considering that they might have self-selected themselves out to attende their own). We can hope that they also feel included and get their fair share of attention.
 "
 
 # ╔═╡ f57d4947-2829-4e82-b5c9-14e7c1fec8ac
@@ -350,107 +159,16 @@ md"
 ### Code
 "
 
-# ╔═╡ e90c0273-8a2f-4abc-9977-c0657bfbd891
-md"##### General"
+# ╔═╡ d2941c1e-de80-47a1-b7ee-9db383cfecb5
 
-# ╔═╡ 31f4e3df-23d0-44ff-b18e-52bc496644c3
-md"##### Task A"
-
-# ╔═╡ f38017a5-8b3f-4980-9cff-32922dcf92d4
-md"###### Functions"
-
-# ╔═╡ 2b3da069-fb95-4780-8596-8f50e56b6c96
-md"###### Function calls"
-
-# ╔═╡ dcda48c5-9c89-4b6e-9578-d016a7cfaae3
-md"##### Task B"
-
-# ╔═╡ 0a3d403b-abfd-4900-8bd4-5ea7b3e63060
-md"###### Functions"
-
-# ╔═╡ 92bea1c7-ba58-457c-9775-2ec18b937faf
-function bday_pdx(k)
-    a = factorial(big(365))
-    b = factorial(big(365-k))
-    c = BigInt(365)^k
-    return 1-(a/(b*c))
-end;
-
-# ╔═╡ 15554926-26e6-4399-9185-bcc7b3615523
-function find_duplicate(a)
-    l = length(a)
-    for i in 1:l-1
-        for j in i+1:l
-            if a[i] == a[j]
-                return true
-            end
-        end
-    end   
-    return false
-end;
-
-# ╔═╡ e1768fa4-31eb-409c-b6eb-b149ca414d7f
-function simulate_bpdx(n, k)
-    hit = 0
-    for i in 1:k
-        a = Vector{Int64}(1:n)
-        for j in eachindex(a)
-            a[j] = rand(1:365)
-        end
-        if find_duplicate(a)
-            hit += 1
-        end
-    end
-    prob = hit/k
-    return prob
-end;
-
-# ╔═╡ dfc1c9be-c504-4e16-8ed3-c0f8ff58de6e
-md"###### Function calls"
-
-# ╔═╡ 06eaa4ca-3e1d-4f7e-8954-6d1b4be55abe
-P_23 = bday_pdx(23);
-
-# ╔═╡ 1cbd19e5-bd41-4e43-8140-b23d1a6c4d26
-setprecision(10) do
-round(P_23; sigdigits=2)
-end
-
-# ╔═╡ a862a406-d347-41d1-a1f8-ccc628fe4cd2
-P_40 = bday_pdx(40);
-
-# ╔═╡ c2119e11-1d36-494f-9036-923ae7b0f442
-setprecision(10) do
-round(P_40; sigdigits=2)
-end
-
-# ╔═╡ a6377a00-2927-4c4d-a061-9682d81d2b88
-begin
-pdx1 = Vector{Float64}(1:100)	
-pdx2 = Vector{Float64}(1:100)
-for n in eachindex(pdx1)
-pdx1[n] = bday_pdx(n)
-end
-for n in eachindex(pdx2)
-pdx2[n] = simulate_bpdx(n, u)
-end
-end;
-
-# ╔═╡ fb42651b-1610-47c8-8062-c2a6f0c2096e
-begin
-	plot(pdx1, label="calculated", legend=:bottomright, title="Birthday paradox simulation", line=(0.5, 5),  legendfontsize=10)
-	plot!(pdx2, label="result", line=(1, 2))
-end 
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
 PLUTO_PROJECT_TOML_CONTENTS = """
 [deps]
-Combinatorics = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
 PlutoUI = "7f904dfe-b85e-4ff6-b463-dae2292396a8"
 
 [compat]
-Combinatorics = "~1.0.2"
 Plots = "~1.33.0"
 PlutoUI = "~0.7.40"
 """
@@ -461,7 +179,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.0"
 manifest_format = "2.0"
-project_hash = "0300c7d5a0356e63b436f1570cb333a7e42e3986"
+project_hash = "007fbb57db0277a809224fb92fc2c3ad5ea07613"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -532,11 +250,6 @@ deps = ["ColorTypes", "FixedPointNumbers", "Reexport"]
 git-tree-sha1 = "417b0ed7b8b838aa6ca0a87aadf1bb9eb111ce40"
 uuid = "5ae59095-9a9b-59fe-a467-6f913c188581"
 version = "0.12.8"
-
-[[deps.Combinatorics]]
-git-tree-sha1 = "08c8b6831dc00bfea825826be0bc8336fc369860"
-uuid = "861a8166-3701-5b0c-9a16-15d98fcdc6aa"
-version = "1.0.2"
 
 [[deps.Compat]]
 deps = ["Dates", "LinearAlgebra", "UUIDs"]
@@ -1394,73 +1107,19 @@ version = "1.4.1+0"
 
 # ╔═╡ Cell order:
 # ╠═44fd5f71-c347-4754-a50b-09f43b615e47
-# ╟─d14e9714-3365-11ed-1125-7be966581a61
-# ╟─fa06cb75-cef4-48c7-a920-27be6d51f7af
-# ╟─42e9660c-dbda-4bd1-8146-d2e88a8d374a
-# ╟─8b8284ba-6e95-4947-a8bc-09ed5046c0f8
+# ╠═3c889854-4e74-4136-aa45-0a3c7430df61
+# ╠═7d3d76b4-a16b-4f86-bb72-6e489edd243e
+# ╠═d14e9714-3365-11ed-1125-7be966581a61
+# ╠═d34338c7-b02d-4290-b3e4-212373278cb1
+# ╠═fa06cb75-cef4-48c7-a920-27be6d51f7af
+# ╠═42e9660c-dbda-4bd1-8146-d2e88a8d374a
+# ╠═8b8284ba-6e95-4947-a8bc-09ed5046c0f8
 # ╠═67e3c538-0330-461b-abfd-3271d13cf4fc
-# ╟─8118483c-5b54-4fc2-8825-17f2022b4316
-# ╟─d95bed62-ed09-4fb8-9401-f8d39300ac19
-# ╟─dd33dca5-d435-41bc-afa8-b8d393aed7cd
-# ╟─ace97548-f911-4727-8318-79aac3e1ef0d
-# ╟─1cbd19e5-bd41-4e43-8140-b23d1a6c4d26
-# ╟─b14ed635-d84c-4a3d-87c1-c190bcb5d108
-# ╟─c2119e11-1d36-494f-9036-923ae7b0f442
-# ╟─d8016d78-b935-4b0e-a4c3-7b2bb186638f
-# ╟─28f86fad-f649-452e-a931-111b7abae327
-# ╟─68f24a89-8329-4c78-9019-20b995a4ceca
-# ╟─81930122-7292-4a91-8686-7f5124b4bb3b
-# ╟─8decc52c-8c6f-438f-aa81-7d7977b1e458
-# ╟─8925b8a5-9dcf-4463-bbe1-14aa820a3dc4
-# ╟─c90bb186-bd29-4827-be02-74f016d225f1
-# ╟─7fe8487f-0754-4292-a864-d4a7217da773
-# ╟─f4e39beb-b88e-4851-b469-415796ffbf29
-# ╟─3c2ec51e-09cf-4753-8f5b-4031f85f403c
-# ╟─0934feee-3dcb-47b6-b695-a7e84e5e6413
-# ╟─38c38a2c-83f2-4901-b7f1-6fe06d766b09
-# ╟─3ab8ea7b-b95f-4341-9de4-340d01a37a6d
-# ╟─060cbb65-46f2-455c-ac8b-f26390f30db9
-# ╟─86573f03-7a57-4262-9a26-babe47b485c3
-# ╟─199bd2a5-a248-4f4f-bece-48e4904a004b
-# ╟─48abcd9f-bde5-4ff3-b5f2-d346574b0f39
-# ╟─a134b0ab-5e29-4338-8951-5fba51ab63cb
-# ╟─5bbbc1b5-54e1-498c-877c-fc2d1f792077
-# ╟─fbf85183-f818-433a-9127-24d0edb2236e
-# ╟─6e27aa7e-aea1-49fc-91ab-c79ebe3c4ca0
-# ╟─eba34638-afab-43fd-adc7-54b32a7f87dd
-# ╟─d31fa0cf-737c-4fa8-ac91-150f26381d83
-# ╟─357d80bd-a1e6-41a0-aa18-b6ba1141a8e2
-# ╟─3f47d1bd-69b7-4e80-817f-616f99469334
-# ╟─782642df-2780-4c5e-84e2-8c901adc8af3
-# ╟─7337465f-949f-40af-872e-ef9e2d9238bc
-# ╟─083ccec4-9254-4ee1-a038-0c797549c3ec
-# ╟─0d8ae0ea-2726-4222-b1b4-f53fb35d181e
-# ╟─8ddd9c39-b9fd-478f-87fb-a468aa1b8592
-# ╟─20a92964-0028-4939-b0ac-05c8adf19543
-# ╟─f0054555-7f0c-4c4a-a469-f44f816fa7ed
-# ╟─327de52f-16fc-4144-a5c7-f9813a10b8c2
-# ╟─12e1d9cb-1bf0-4015-ada7-a7fe5822f639
-# ╟─982bc73b-e95a-47ab-8c9f-ef5497fec833
-# ╟─65ec3e02-1d7d-4fdb-a617-df3289b6639a
-# ╟─835cf573-edc9-4abe-bb79-7d18fe262279
-# ╟─0708f674-8218-4898-8b27-91be34ac6b1a
-# ╟─c03577d7-e288-46bc-892d-7ae7d58ff36c
-# ╟─fb42651b-1610-47c8-8062-c2a6f0c2096e
-# ╟─27974177-5f50-4b1c-9b5a-18b0e30808aa
-# ╟─f57d4947-2829-4e82-b5c9-14e7c1fec8ac
-# ╟─e90c0273-8a2f-4abc-9977-c0657bfbd891
-# ╠═235f2952-6853-4f53-9b93-1bc55af079e7
-# ╟─31f4e3df-23d0-44ff-b18e-52bc496644c3
-# ╟─f38017a5-8b3f-4980-9cff-32922dcf92d4
-# ╟─2b3da069-fb95-4780-8596-8f50e56b6c96
-# ╟─dcda48c5-9c89-4b6e-9578-d016a7cfaae3
-# ╟─0a3d403b-abfd-4900-8bd4-5ea7b3e63060
-# ╠═92bea1c7-ba58-457c-9775-2ec18b937faf
-# ╠═e1768fa4-31eb-409c-b6eb-b149ca414d7f
-# ╠═15554926-26e6-4399-9185-bcc7b3615523
-# ╟─dfc1c9be-c504-4e16-8ed3-c0f8ff58de6e
-# ╠═06eaa4ca-3e1d-4f7e-8954-6d1b4be55abe
-# ╠═a862a406-d347-41d1-a1f8-ccc628fe4cd2
-# ╠═a6377a00-2927-4c4d-a061-9682d81d2b88
+# ╠═8118483c-5b54-4fc2-8825-17f2022b4316
+# ╠═d95bed62-ed09-4fb8-9401-f8d39300ac19
+# ╠═dd33dca5-d435-41bc-afa8-b8d393aed7cd
+# ╠═c952bcf0-a966-44f5-8430-7edf28f7288b
+# ╠═f57d4947-2829-4e82-b5c9-14e7c1fec8ac
+# ╠═d2941c1e-de80-47a1-b7ee-9db383cfecb5
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
