@@ -37,9 +37,6 @@ md"
     Martin Mellqvist Ekberg, martme@kth.se
 "
 
-# ╔═╡ d34338c7-b02d-4290-b3e4-212373278cb1
-
-
 # ╔═╡ fa06cb75-cef4-48c7-a920-27be6d51f7af
 md"
 ## Task A
@@ -315,6 +312,9 @@ Shown below is a graph of both the calculated probability and the actual results
 
 # ╔═╡ 0708f674-8218-4898-8b27-91be34ac6b1a
 @bind u Slider(10:500)
+
+# ╔═╡ c03577d7-e288-46bc-892d-7ae7d58ff36c
+k=u
 
 # ╔═╡ 27974177-5f50-4b1c-9b5a-18b0e30808aa
 md"
@@ -1388,7 +1388,6 @@ version = "1.4.1+0"
 # ╔═╡ Cell order:
 # ╠═44fd5f71-c347-4754-a50b-09f43b615e47
 # ╟─d14e9714-3365-11ed-1125-7be966581a61
-# ╠═d34338c7-b02d-4290-b3e4-212373278cb1
 # ╟─fa06cb75-cef4-48c7-a920-27be6d51f7af
 # ╟─42e9660c-dbda-4bd1-8146-d2e88a8d374a
 # ╟─8b8284ba-6e95-4947-a8bc-09ed5046c0f8
@@ -1434,6 +1433,7 @@ version = "1.4.1+0"
 # ╟─65ec3e02-1d7d-4fdb-a617-df3289b6639a
 # ╟─835cf573-edc9-4abe-bb79-7d18fe262279
 # ╟─0708f674-8218-4898-8b27-91be34ac6b1a
+# ╟─c03577d7-e288-46bc-892d-7ae7d58ff36c
 # ╟─fb42651b-1610-47c8-8062-c2a6f0c2096e
 # ╟─27974177-5f50-4b1c-9b5a-18b0e30808aa
 # ╟─f57d4947-2829-4e82-b5c9-14e7c1fec8ac
