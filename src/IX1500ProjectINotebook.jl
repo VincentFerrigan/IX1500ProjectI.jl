@@ -189,7 +189,7 @@ We can extend this to $N$ comparisons with permutations with repetetion giving u
 
 $1-\Bigl({364 \over 365}\Bigl)^N$
 
-Comparing this with the approximative formula above, and with $N=1$ give us:
+Comparing this with the approximative formula above, and with $N=1$ gives us:
 "
 
 # ╔═╡ 28f86fad-f649-452e-a931-111b7abae327
