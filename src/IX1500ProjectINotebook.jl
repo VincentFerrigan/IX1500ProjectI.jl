@@ -126,10 +126,10 @@ md"
 
 To begin with we have to make a few assumptions:
 
-1. There are always 365 days in a year (i.e. we ignore leap years)
-2. Every birthday is equally likely
-3. There are no dependencies between birthdays (we discount twin, triplets etc)
-4. The set of people $N$ is completely random
+1. There are *always* 365 days in a year (i.e. we ignore leap years)
+2. Every birthday is *equally* likely
+3. There are *no dependencies* between birthdays (we discount twins, triplets etc)
+4. The set of people $N$ is *completely random*
 
 ##### N people in the room
 
@@ -143,7 +143,7 @@ This gives us:
 
 $P = {A \over B}$
 
-The number of outcomes where no two people share a birthday is given by the number of permutations without repetition:
+The number of outcomes, where no two people share a birthday, is given by the number of permutations without repetition:
 
 ${365!\over (365-N)!}$
 
@@ -193,13 +193,13 @@ Comparing this with the approximative formula above, and with $N=1$ give us:
 "
 
 # ╔═╡ 28f86fad-f649-452e-a931-111b7abae327
-md"Approximative:"
+md"**Approximative:**"
 
 # ╔═╡ 68f24a89-8329-4c78-9019-20b995a4ceca
 1/365
 
 # ╔═╡ 81930122-7292-4a91-8686-7f5124b4bb3b
-md"Combinatoric:"
+md"**Combinatoric:**"
 
 # ╔═╡ 8decc52c-8c6f-438f-aa81-7d7977b1e458
 1-(364/365)
@@ -214,13 +214,13 @@ For $N = 5$
 "
 
 # ╔═╡ c90bb186-bd29-4827-be02-74f016d225f1
-md"Approximative:"
+md"**Approximative:**"
 
 # ╔═╡ 7fe8487f-0754-4292-a864-d4a7217da773
 5(1/365)
 
 # ╔═╡ f4e39beb-b88e-4851-b469-415796ffbf29
-md"Combinatoric:"
+md"**Combinatoric:**"
 
 # ╔═╡ 3c2ec51e-09cf-4753-8f5b-4031f85f403c
 1-((364/365)^5)
@@ -229,13 +229,13 @@ md"Combinatoric:"
 md"Still close but the difference is more pronounced let's see what happens in the birthday paradox situation of $N=23$"
 
 # ╔═╡ 38c38a2c-83f2-4901-b7f1-6fe06d766b09
-md"Approximative:"
+md"**Approximative:**"
 
 # ╔═╡ 3ab8ea7b-b95f-4341-9de4-340d01a37a6d
 23(1/365)
 
 # ╔═╡ 060cbb65-46f2-455c-ac8b-f26390f30db9
-md"Combinatoric:"
+md"**Combinatoric:**"
 
 # ╔═╡ 86573f03-7a57-4262-9a26-babe47b485c3
 1-((364/365)^23)
@@ -247,13 +247,13 @@ md"Two final tests one for $N=40$ and one for $N=365$"
 md"For $N=40:$"
 
 # ╔═╡ a134b0ab-5e29-4338-8951-5fba51ab63cb
-md"Approximative:"
+md"**Approximative:**"
 
 # ╔═╡ 5bbbc1b5-54e1-498c-877c-fc2d1f792077
 40(1/365)
 
 # ╔═╡ fbf85183-f818-433a-9127-24d0edb2236e
-md"Combinatoric:"
+md"**Combinatoric:**"
 
 # ╔═╡ 6e27aa7e-aea1-49fc-91ab-c79ebe3c4ca0
 1-((364/365)^40)
@@ -262,13 +262,13 @@ md"Combinatoric:"
 md"For $N=365:$"
 
 # ╔═╡ d31fa0cf-737c-4fa8-ac91-150f26381d83
-md"Approximative:"
+md"**Approximative:**"
 
 # ╔═╡ 357d80bd-a1e6-41a0-aa18-b6ba1141a8e2
 365(1/365)
 
 # ╔═╡ 3f47d1bd-69b7-4e80-817f-616f99469334
-md"Combinatoric:"
+md"**Combinatoric:**"
 
 # ╔═╡ 782642df-2780-4c5e-84e2-8c901adc8af3
 1-((364/365)^365)
@@ -284,8 +284,14 @@ We can experiment further with the comparisons by testing for more values of $N$
 # ╔═╡ 0d8ae0ea-2726-4222-b1b4-f53fb35d181e
 N = g
 
+# ╔═╡ 8ddd9c39-b9fd-478f-87fb-a468aa1b8592
+md"**Approximative:**"
+
 # ╔═╡ 20a92964-0028-4939-b0ac-05c8adf19543
 N*(1/365)
+
+# ╔═╡ f0054555-7f0c-4c4a-a469-f44f816fa7ed
+md"**Combinatoric:**"
 
 # ╔═╡ 327de52f-16fc-4144-a5c7-f9813a10b8c2
 1-((364/365)^N)
@@ -301,9 +307,9 @@ Now it's easy to see that this calculation is much different from the one in the
 md"
 ##### Simulation
 
-For the simulation we assign random numbers $(1, 365)$ to a vector of length $N$. We then check for duplicates. We have two counters $amount$ and $hit$ initialized to $0$. If we find a duplicate we iterate both counters, if we don't we only iterate the $amount$ counter. We run this entire process $k$ times. When we have run this we can divide the number of $hits$ by $amount$ to get the actual probability.
+For the simulation we assign random numbers $[1, 365]$ to a vector of length $N$. We then check for duplicates and if we find one we increment a counter for the number of hits (i.e. simulations with duplicates) found. We do these simulation $k$ times. Once we're done we can return:
 
-$P(N)={hits\over amount}$
+$P(N)={hits\over k}$
 
 For high enough values of $k$ this should start to approximated the calculated probability.
 
@@ -318,7 +324,7 @@ k=u
 
 # ╔═╡ 27974177-5f50-4b1c-9b5a-18b0e30808aa
 md"
-##### Coclusions
+##### Conclusions
 
 The birthday paradox unintuitive results bear out in both the calculations and the simulation. In our comparison to just comparing our own birthday to that of the rest of the $N$ people we could see one reason why this seems so wrong at a first glance, we simple are not used to doing comparisons this way. The second issue is that even if we understand the number of comparisons, non-linear growth is less obvious and natural to us.
 
@@ -329,6 +335,8 @@ We didn't consider twins, triplets etc. which in most cases share a birthday and
 Leap years will also skew the results. People born on the 29th of February are much more unlikely to share a birthday with someone else.
 
 Finally we need to account for possibilities of selection affecting the result. While most rooms can be probably be safely considered to be as random, we still need to consider the possibility.
+
+While these things do have a chance to affect the actual reality, in most cases the results will probably be close enough that you can rely on it.
 
 One thought that occured as we did this assignment was that at any large enough birthday party, chances are good that another person also has a birthday (though here it's worth considering that they might have self-selected themselves out to attende their own). We can hope that they also feel included and get their fair share of attention.
 "
@@ -380,21 +388,16 @@ end;
 # ╔═╡ e1768fa4-31eb-409c-b6eb-b149ca414d7f
 function simulate_bpdx(n, k)
     hit = 0
-    counter = 0
     for i in 1:k
         a = Vector{Int64}(1:n)
         for j in eachindex(a)
             a[j] = rand(1:365)
         end
-
         if find_duplicate(a)
             hit += 1
-            counter += 1
-        else
-            counter += 1
         end
     end
-    prob = hit/counter
+    prob = hit/k
     return prob
 end;
 
@@ -431,8 +434,8 @@ end;
 
 # ╔═╡ fb42651b-1610-47c8-8062-c2a6f0c2096e
 begin
-	plot(pdx1, label="calculated", legend=:bottomright)
-	plot!(pdx2, label="result")
+	plot(pdx1, label="calculated", legend=:bottomright, title="Birthday paradox simulation", line=(0.5, 5),  legendfontsize=10)
+	plot!(pdx2, label="result", line=(1, 2))
 end 
 
 # ╔═╡ 00000000-0000-0000-0000-000000000001
@@ -454,7 +457,7 @@ PLUTO_MANIFEST_TOML_CONTENTS = """
 
 julia_version = "1.8.0"
 manifest_format = "2.0"
-project_hash = "5ed6b0828ff0f1bcb3462cce49297ecb276bd0f6"
+project_hash = "0300c7d5a0356e63b436f1570cb333a7e42e3986"
 
 [[deps.AbstractPlutoDingetjes]]
 deps = ["Pkg"]
@@ -1428,7 +1431,9 @@ version = "1.4.1+0"
 # ╟─7337465f-949f-40af-872e-ef9e2d9238bc
 # ╟─083ccec4-9254-4ee1-a038-0c797549c3ec
 # ╟─0d8ae0ea-2726-4222-b1b4-f53fb35d181e
+# ╟─8ddd9c39-b9fd-478f-87fb-a468aa1b8592
 # ╟─20a92964-0028-4939-b0ac-05c8adf19543
+# ╟─f0054555-7f0c-4c4a-a469-f44f816fa7ed
 # ╟─327de52f-16fc-4144-a5c7-f9813a10b8c2
 # ╟─65ec3e02-1d7d-4fdb-a617-df3289b6639a
 # ╟─835cf573-edc9-4abe-bb79-7d18fe262279
