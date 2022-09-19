@@ -6,21 +6,20 @@
 - How do I add non-code? 
 *Well, just use Markdown with md\" ...\"*
 
-- How do I add mathematical nonation?
-*Use LaTeX notation. Ex: $$a = {x /over 1}$$*
+- ~~How do I add mathematical nonation?~~
+*Use LaTeX notation. Ex: $a = {x /over 1}$*
 
 - How do I add keybindings?
 - How do I spellcheck with LT?
+- **Issues with including module. Temp fix has been to import code from TaskB.jl**
 
 ### Task A
 
 ### Task B
-- ~~What assumptions are we making?~~
-- Implement a formula that calculates the probability of
-- Solve N=40
-- Compare to single comparision with N people.
-- Draw graphs.
-- Compute actual probabilities for a range of *N*, graph and compare to calculated probabilities.
+- Cleanup
+
+### Other
+- Has all the "project stuff" been removed from the notebook?
 
 ## Info & tutorials
 
@@ -38,6 +37,9 @@
 * [Combinatorics](https://juliamath.github.io/Combinatorics.jl/dev/)
 * [Julia Language Database JuliaDB - YouTube](https://www.youtube.com/watch?v=pv5zfIs2lyU&list=PLsu0TcgLDUiLfwJipaXOBRqwqZlT4Atfk)
 * [Julia for simple medical statistical analysis](https://www.youtube.com/watch?v=4nPmKG_f8-M&list=PLsu0TcgLDUiIznEhN165XmykqyLgzwY0Y)
+* [Blog-post: Beautiful julia](http://blog.translusion.com/posts/beautiful-julia/)
+* [juliadatascience](https://juliadatascience.io/)
+* [Tutorialpoint](https://www.tutorialspoint.com/julia/julia_dictionaries_sets.htm)
 
 ### Markdown
 * [markdown guide](https://www.markdownguide.org/)
@@ -46,6 +48,7 @@
 ### Poker
 * [Hand rankings](https://www.pokerstars.se/en/poker/games/rules/hand-rankings/)
 * [Texas hold'em](https://www.pokerstars.se/en/poker/games/texas-holdem/)
+* [Poker probability wiki](https://en.wikipedia.org/wiki/Poker_probability)
 
 ### Birthday Paradox
 * [Understanding the Birthday Paradox](https://betterexplained.com/articles/understanding-the-birthday-paradox/)
