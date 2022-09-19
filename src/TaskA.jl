@@ -6,13 +6,20 @@
 # - Date: 2022-09-18
 # - Version: 0.7
 
+# istället för att hasfunktionerna avläser 7 kort så kan den 
+# ta emot två vectorer. ..en hole och en community(?)
+# måste holekorten alltid räknas in? båda eller en?
+
 module TaskA
 using Combinatorics
 using Random
 import Base.show
 import Base.==
 
-export collectionofhands, fulldeck, Card
+export collectionofhands, fulldeck, Card, hasonepair, hastwopairs,
+hasthreeofakind, hasstraight, hasflush, hasfullhouse, hasfourofakind,
+hasstraightflush, hasroyalstraightflush
+
 
 const RANKS = [:ace, :two, :three, :four, :five, :six, :seven, :eight, :nine, :ten, :jack, :queen, :king]
 const SUITS = [:♣, :♢, :♡, :♠]
@@ -52,7 +59,7 @@ function fulldeck()
     return deck
 end
 
-function hasonepair(cards::Vector{Card})
+function hasonepair(cards)
     # must exclude two pairs, three of a kind and four of a kind
     # short-circuit return condition
     n = length(cards)
@@ -267,7 +274,7 @@ end
 # hfh = filter(x -> hasfullhouse(x), HANDCOMB)
 # h4 = filter(x -> hasfourofakind(x), HANDCOMB)
 # hsf = filter(x -> hasstraightflush(x), HANDCOMB)
-hrsf = filter(x -> hasroyalstraightflush(x), HANDCOMB)
+# hrsf = filter(x -> hasroyalstraightflush(x), HANDCOMB)
 
 # partitions(HOLECOMB)
 # deckteVst = fulldeck()

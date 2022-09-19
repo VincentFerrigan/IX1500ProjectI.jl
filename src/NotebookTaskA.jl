@@ -5,7 +5,7 @@ using Markdown
 using InteractiveUtils
 
 # ╔═╡ 4b2d5fa8-0824-4be4-9c7b-c773de42490b
-# Packages
+## Packages
 begin
 	#using InteractiveUtils
 	using PlutoUI
@@ -16,7 +16,7 @@ begin
 end
 
 # ╔═╡ acbe1325-4110-455b-ab22-bc7b6a3de2c9
-# Imports
+## Imports
 begin
 	include("TaskA.jl")
 	import .TaskA
@@ -24,6 +24,7 @@ end
 
 # ╔═╡ 084c07da-373f-11ed-0dc0-4552c95b6e50
 ### A ProjectOneGroup17.jl notebook ###
+## Version 0.3 ##
 
 # ╔═╡ c822233a-10b8-4a1d-a2d7-e5cbd42fb1db
 md"
@@ -34,6 +35,21 @@ md"
     Version: 0.1
     Vincent Ferrigan, ferrigan@kth.se
     Martin Mellqvist Ekberg, martme@kth.se
+"
+
+# ╔═╡ 6c2650b4-46c6-4527-80a4-656c319112e3
+md"## Pluto-Notebook
+### Packages
+* PlutoUI
+* Plots
+* Combinatorics
+* Random
+* Dataframes
+"
+
+# ╔═╡ cdb5b5d9-7cbe-4a1a-9741-38966ade539e
+md"### Imports
+* TaskA.jl (module)
 "
 
 # ╔═╡ 5f09254a-8662-4f4d-9996-f817579d64df
@@ -72,48 +88,270 @@ md"
 #### Result
 "
 
-# ╔═╡ 743268d0-0098-412b-aebb-c28aeec29bae
-
-
 # ╔═╡ e604032f-d10f-424f-8be9-3953c8fa5bbe
 md"
 ### Texas hold 'em poker
+
+My hand consists of all combinations av five cards taken from all combinations
+of seven cards. These seven cards are as follows:
+
+**Pre-flop**
+* _two randomly picked hole-cards_ drawn from a _deck of 52 cards_ and
+* _three randomly picked community-cards_ that consists of:
+    * _all combinations of five cards_ from a _deck of now 50 cards_.
+
+**Flop**
+* the _two randomly picked hole-cards_ that were drawn from a _deck of 52 cards_ and
+* _three randomly picked community-cards_ that consists of
+    * _three randomly picked community cards_ that are drawn from a _deck of 50 cards_ plus
+    * _all combinations of two cards_ from a _deck of now 47 cards_
+
+
 "
-
-# ╔═╡ 5e1b1f6b-a1fe-42bc-b842-5073961ad4e6
-
 
 # ╔═╡ abc6d425-985c-47d4-8c3c-b63b93646eba
 md"
 ### Code
 "
 
-# ╔═╡ 9365c11a-efe3-42b9-9221-b97010cf5ccc
-sets = TaskA.collectionofhands()
-
-# ╔═╡ 80a4b0a2-fcd8-41b1-aba5-e16800c6834c
-# All sets
-begin
-	OP = sets[:onepair]
-	TP = sets[:twopairs]
-	TK = sets[:threeofakind]
-	S = sets[:straight]
-	F = sets[:flush]
-	FH = sets[:fullhouse]
-	FK = sets[:fourofakind]
-	SF = sets[:straightflush]
-	RSF = sets[:royalstraightflush]
+# ╔═╡ d03250ad-f9ae-4a24-b203-3f5834bc4d22
+# Collectionfunctions
+function handcollections(handcomb)
+    predict = Dict(
+        :onepair => filter(x -> TaskA.hasonepair(x), handcomb),
+        :twopairs => filter(x -> TaskA.hastwopairs(x), handcomb),
+        :threeofakind => filter(x -> TaskA.hasthreeofakind(x), handcomb),
+        :straight => filter(x -> TaskA.hasstraight(x), handcomb),
+        :flush => filter(x -> TaskA.hasflush(x), handcomb),
+        :fullhouse => filter(x -> TaskA.hasfullhouse(x), handcomb),
+        :fourofakind => filter(x -> TaskA.hasfourofakind(x), handcomb),
+        :straightflush => filter(x -> TaskA.hasstraightflush(x), handcomb),
+        :royalstraightflush => filter(x -> TaskA.hasroyalstraightflush(x), handcomb)
+        )
+	OP = predict[:onepair]
+	TP = predict[:twopairs]
+	TK = predict[:threeofakind]
+	S = predict[:straight]
+	F = predict[:flush]
+	FH = predict[:fullhouse]
+	FK = predict[:fourofakind]
+	SF = predict[:straightflush]
+	RSF = predict[:royalstraightflush]
+      
+	dict = Dict(
+		# onepair ∖ twopair ∖ threeofakind
+		"One Pair" 	=> setdiff(OP, TP, TK),
+		# twopair ∖ fullhouse
+		"Two Pairs"	=> setdiff(TP, FH),
+		# threeofakind ∖ fourofakind ∖ fullhouse
+		"Three of a kind" => setdiff(TK, FK, FH),
+		# straight ∖ straightflush
+		"Straight" => setdiff(S, SF),
+		# flush ∖ straightflush
+		"Flush"	=> setdiff(F, SF),
+		"Full house" => FH,
+		"Four of a kind" => FK,
+		# straightflush ∖ royalstraightflush
+		"Straight Flush" => setdiff(SF, RSF),
+		"Royal Straight Flush" => RSF
+)
+	return dict
 end
 
+# ╔═╡ 8b612d03-c8cb-4b77-8c70-c6c4f294c817
+# Helpfunctions for df "mapping"
+begin
+	sizeofset = x-> size(x)[1]
+	probofset52_5 = x-> size(x)[1]/binomial(52,5)
+end
+
+# ╔═╡ f411db9f-3477-4655-ad26-77f05d714e19
+md"
+#### Pre-flop
+"
+
+# ╔═╡ 8af1d236-bc00-4bcc-92bf-157042ab29b6
+begin
+	deck = TaskA.fulldeck()
+	holecards = Vector(undef, 0)
+	push!(holecards, popat!(deck, rand(1:size(deck)[1])))
+	push!(holecards, popat!(deck, rand(1:size(deck)[1])))
+end
+
+# ╔═╡ d7a67e38-1f4f-4aec-a4bc-b6d5f4c5f278
+# Assertions
+begin
+	@assert size(holecards)[1] == 2
+	@assert size(deck)[1] == 50
+end
+
+# ╔═╡ f4e8a483-3d9a-4c3f-83d7-cc3d86e2940a
+communitycomb = combinations(deck, 5) |> collect
+
+# ╔═╡ a6f2c2c1-3997-413f-8577-8457256877a4
+# throw two random cards away
+begin
+	foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
+	foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
+end
+
+# ╔═╡ e09c4611-6cdd-4b26-8d0a-1e4e97d38b67
+@assert size(communitycomb[1])[1] == 3
+
+# ╔═╡ 76ad00fb-313a-4af3-a45c-62aecce6f5b1
+preflophandcomb = map(x -> vcat(x, holecards), communitycomb)
+
+# ╔═╡ ee51d4ff-5a79-4b7f-b9bc-411996a30122
+preflop_hands = handcollections(preflophandcomb)
+
+# ╔═╡ 4930a89b-f627-4f9a-8b3e-218fd3f71387
+df_preflop = DataFrame(
+	#:id => keys(setofhands) |> collect |> x -> sort(x, by = y->[2]),
+	:name => keys(preflop_hands) |> collect,
+	#:supersets => values(setofhands) |> collect, # problem att de är i annan ordning
+	:sets => values(preflop_hands) |> collect,
+	:freq => values(preflop_hands) |> x -> sizeofset.(x) |> collect,
+	:prob => values(preflop_hands) |> x -> probofset52_5.(x) |> collect
+);
+
+# ╔═╡ d8cba9cb-ea8f-4f26-b452-7445d71be762
+sort(df_preflop,[:freq])
+
+# ╔═╡ e70d8bf0-85c9-4f7f-b90e-0f5f8ab14b8d
+md"
+#### Flop
+"
+
+# ╔═╡ 5be38f8f-f2fa-4767-aa8a-924ccc521578
+length(deck)
+
+# ╔═╡ 5943b25b-9151-4247-8833-9e25c1a93ed3
+begin
+	threecommcards = Vector(undef, 0)
+	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
+	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
+	push!(threecommcards, popat!(deck, rand(1:size(deck)[1])))
+end
+
+# ╔═╡ 77a06e64-d920-4b1f-b1e2-5163137da545
+# Assertions
+begin
+	@assert size(holecards)[1] == 2
+	@assert size(threecommcards)[1] == 3
+	@assert size(deck)[1] == 47
+end
+
+# ╔═╡ d2ed257a-e154-4181-9daf-5bf128494e89
+communitycomboftwo = combinations(deck, 2) |> collect
+
+# ╔═╡ 12c6520b-e280-4a5e-b9f4-a996db2c7c13
+communitycombflop = map(x -> vcat(x, threecommcards), communitycomboftwo)
+
+# ╔═╡ 1df9178a-0ba1-4965-8c7a-57f619372dd2
+# throw two random cards away
+begin
+	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
+	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
+end
+
+# ╔═╡ d04eb8a2-a2d2-41ee-93a9-adcc094db015
+@assert size(communitycombflop[1])[1] == 3
+
+# ╔═╡ 233e91cf-c078-4139-b60b-2cb0f6d5df16
+flophandcomb = map(x -> vcat(x, holecards), communitycombflop)
+
+# ╔═╡ ea374e9c-b482-48d9-9819-8fc313928524
+flop_hands = handcollections(flophandcomb)
+
+# ╔═╡ 14fa8806-b25a-485c-b5ff-7ea9bb60a7ff
+df_flop = DataFrame(
+	#:id => keys(setofhands) |> collect |> x -> sort(x, by = y->[2]),
+	:name => keys(flop_hands) |> collect,
+	#:supersets => values(setofhands) |> collect, # problem att de är i annan ordning
+	:sets => values(flop_hands) |> collect,
+	:freq => values(flop_hands) |> x -> sizeofset.(x) |> collect,
+	:prob => values(flop_hands) |> x -> probofset52_5.(x) |> collect
+);
+
+# ╔═╡ abfd6318-28ea-4780-81ab-a231f0be8d89
+sort(df_flop,[:freq])
+
+# ╔═╡ d73fffaf-25e4-4fd2-9ea7-ae863dd34109
+md"##### Assert that all is in order"
+
+# ╔═╡ e5247aa3-ee4a-4a04-bdfb-184d574e2728
+const HANDCOMBINATIONS = combinations(TaskA.fulldeck(), 5) |> collect 
+
+# ╔═╡ 1ff7d2c7-ec32-4758-9055-faa8170c871e
+HANDS = handcollections(HANDCOMBINATIONS)
+
+# ╔═╡ 420345e9-d9ef-48da-97bf-83e80e22997e
+df_HANDS = DataFrame(
+	#:id => keys(setofhands) |> collect |> x -> sort(x, by = y->[2]),
+	:name => keys(HANDS) |> collect,
+	#:supersets => values(setofhands) |> collect, # problem att de är i annan ordning
+	:sets => values(HANDS) |> collect,
+	:freq => values(HANDS) |> x -> sizeofset.(x) |> collect,
+	:prob => values(HANDS) |> x -> probofset52_5.(x) |> collect
+)
+
+# ╔═╡ 743268d0-0098-412b-aebb-c28aeec29bae
+sort(df_HANDS,[:freq])
+
+# ╔═╡ f2a1da0b-cdc7-4e25-bdfc-44a2f9399c9d
+HANDS["One Pair"]
+
+# ╔═╡ 3e6cfd15-379f-42f9-9c7e-7f126313a5a1
+# Assertions based on https://en.wikipedia.org/wiki/Poker_probability
+begin
+	@assert size(HANDS["One Pair"])[1]			== 1_098_240
+	@assert size(HANDS["Two Pairs"])[1] 		== 123_552
+	@assert size(HANDS["Three of a kind"])[1] 	== 54_912
+	@assert size(HANDS["Straight"])[1] 			== 10_200
+	@assert size(HANDS["Flush"])[1] 			== 5_108
+	@assert size(HANDS["Full house"])[1] 		== 3_744
+	@assert size(HANDS["Four of a kind"])[1] 	== 624
+	@assert size(HANDS["Straight Flush"])[1] 	== 36
+	@assert size(HANDS["Royal Straight Flush"])[1] == 4
+end
+
+# ╔═╡ 9365c11a-efe3-42b9-9221-b97010cf5ccc
+# ╠═╡ disabled = true
+#=╠═╡
+setofhands = TaskA.collectionofhands()
+  ╠═╡ =#
+
+# ╔═╡ 80a4b0a2-fcd8-41b1-aba5-e16800c6834c
+#=╠═╡
+# All sets
+begin
+	OP = setofhands[:onepair]
+	TP = setofhands[:twopairs]
+	TK = setofhands[:threeofakind]
+	S = setofhands[:straight]
+	F = setofhands[:flush]
+	FH = setofhands[:fullhouse]
+	FK = setofhands[:fourofakind]
+	SF = setofhands[:straightflush]
+	RSF = setofhands[:royalstraightflush]
+end
+  ╠═╡ =#
+
 # ╔═╡ 28199b17-3413-4cc6-983a-f0a13c05a641
+# ╠═╡ disabled = true
+#=╠═╡
+#= latex in markdown
 md"
 $\lbrace \text{one pairs} \rbrace 
 \setminus \lbrace \text{two pairs} \rbrace
 \setminus \lbrace \text{three of a kind} \rbrace
 \setminus \lbrace \text{four of a kind} \rbrace$
 "
+=#
+  ╠═╡ =#
 
 # ╔═╡ 512c09cc-f892-49e6-a119-82b762f9dad4
+#=╠═╡
 # Difference
 begin
 	ONEPAIR 		= setdiff(OP, TP, TK) 	# onepair ∖ twopair ∖ threeofakind 
@@ -126,48 +364,68 @@ begin
 	STRAIGHTFLUSH 	= setdiff(SF, RSF) 		# straightflush ∖ royalstraightflush
 	ROYALSTRAIGHTFLUSH = RSF
 end
-
+  ╠═╡ =#
 
 # ╔═╡ f4a6d3c3-2a20-4d91-aa0c-3129a24d59f7
+#=╠═╡
 # Assertions based on https://en.wikipedia.org/wiki/Poker_probability
 begin
-	@assert length(ONEPAIR) == 1_098_240
-	@assert length(TWOPAIR) == 123_552
-	@assert length(THREEOFAKIND) == 54_912
-	@assert length(STRAIGHT) == 10_200
-	@assert length(FLUSH) == 5_108
-	@assert length(FULLHOUSE) == 3_744
-	@assert length(FOUROFAKIND) == 624
-	@assert length(STRAIGHTFLUSH) == 36
-	@assert length(RSF) == 4
+	@assert size(ONEPAIR)[1]		== 1_098_240
+	@assert size(TWOPAIR)[1] 		== 123_552
+	@assert size(THREEOFAKIND)[1] 	== 54_912
+	@assert size(STRAIGHT)[1] 		== 10_200
+	@assert size(FLUSH)[1] 			== 5_108
+	@assert size(FULLHOUSE)[1] 		== 3_744
+	@assert size(FOUROFAKIND)[1] 	== 624
+	@assert size(STRAIGHTFLUSH)[1] 	== 36
+	@assert size(RSF)[1] 			== 4
 end
+  ╠═╡ =#
 
-# ╔═╡ 85f03c53-337c-424f-a815-5f8206e7fabe
+# ╔═╡ c08ac38c-4149-46e8-acc2-0a6df4c59b7a
+#=╠═╡
+# New Dictionary with Frequency
+hand = Dict(
+	"One Pair" 	=> setdiff(OP, TP, TK),	# onepair ∖ twopair ∖ threeofakind 
+	"Two Pairs"	=> setdiff(TP, FH),		# twopair ∖ fullhouse
+	"Three of a kind" => setdiff(TK, FK, FH), # threeofakind ∖ fourofakind ∖ fullhouse
+	"Straight" => setdiff(S, SF),	# straight ∖ straightflush
+	"Flush"	=> setdiff(F, SF),	# flush ∖ straightflush
+	"Full house" => FH,
+	"Four of a kind" => FK,
+	"Straight Flush" => setdiff(SF, RSF), # straightflush ∖ royalstraightflush
+	"Royal Straight Flush" => RSF
+)
+  ╠═╡ =#
 
-
-# ╔═╡ a89bd7b4-4f1c-43be-a145-4195dcb88de1
-
-
-# ╔═╡ f3a7bee2-b967-4bcc-8da3-4be20d3e3cb8
-
-
-# ╔═╡ 673159aa-b639-4557-9b00-e776017ee4b3
-
-
-# ╔═╡ 948b7abd-c520-4643-83ee-9c51d3a0fcfa
-
+# ╔═╡ ae01dd3f-495d-429f-ba68-4bd933e23bde
+# ╠═╡ disabled = true
+#=╠═╡
+#begin
+	# Helpfunctions for df "mapping"
+#	sizeofset = x-> size(x)[1]
+#	probofset = x-> size(x)[1]/binomial(52,5)
+#end
+  ╠═╡ =#
 
 # ╔═╡ 3192dd4a-aa74-48d4-bc58-f5723c8da4cc
+#=╠═╡
+# men om setofhands och hand använder samma nyckel? då borde det väl gå????
 
-
-# ╔═╡ 635a3366-af8e-4436-8d62-dd6e1e3ead6b
-
-
-# ╔═╡ 63533bd6-011a-4722-8cfd-f05dc3cd3d39
-
+df = DataFrame(
+	#:id => keys(setofhands) |> collect |> x -> sort(x, by = y->[2]),
+	:name => keys(hand) |> collect,
+	#:supersets => values(setofhands) |> collect, # problem att de är i annan ordning
+	:sets => values(hand) |> collect,
+	:freq => values(hand) |> x -> sizeofset.(x) |> collect,
+	:prob => values(hand) |> x -> probofset52_5.(x) |> collect
+)
+  ╠═╡ =#
 
 # ╔═╡ fb974b3c-305b-4c6c-80df-ba8a54bb2654
 md"
+ATT UPPDATERA!! med rätt version. Kan man kanske läsa in det som text istället? Så det alltid håller sig uppdaterat? Eller ska jag bara klippa in hela modulen som riktig kod isället för att importa den??
+
 ```
 module TaskA
 using Combinatorics
@@ -1432,28 +1690,54 @@ version = "1.4.1+0"
 
 # ╔═╡ Cell order:
 # ╠═084c07da-373f-11ed-0dc0-4552c95b6e50
-# ╠═4b2d5fa8-0824-4be4-9c7b-c773de42490b
-# ╠═acbe1325-4110-455b-ab22-bc7b6a3de2c9
 # ╟─c822233a-10b8-4a1d-a2d7-e5cbd42fb1db
+# ╠═6c2650b4-46c6-4527-80a4-656c319112e3
+# ╟─4b2d5fa8-0824-4be4-9c7b-c773de42490b
+# ╟─cdb5b5d9-7cbe-4a1a-9741-38966ade539e
+# ╠═acbe1325-4110-455b-ab22-bc7b6a3de2c9
 # ╟─5f09254a-8662-4f4d-9996-f817579d64df
 # ╟─15c94fd1-cc81-4da1-aab1-95b0731db62d
 # ╠═743268d0-0098-412b-aebb-c28aeec29bae
-# ╠═e604032f-d10f-424f-8be9-3953c8fa5bbe
-# ╠═5e1b1f6b-a1fe-42bc-b842-5073961ad4e6
+# ╠═d8cba9cb-ea8f-4f26-b452-7445d71be762
+# ╠═abfd6318-28ea-4780-81ab-a231f0be8d89
+# ╟─e604032f-d10f-424f-8be9-3953c8fa5bbe
 # ╟─abc6d425-985c-47d4-8c3c-b63b93646eba
+# ╠═d03250ad-f9ae-4a24-b203-3f5834bc4d22
+# ╠═8b612d03-c8cb-4b77-8c70-c6c4f294c817
+# ╟─f411db9f-3477-4655-ad26-77f05d714e19
+# ╠═8af1d236-bc00-4bcc-92bf-157042ab29b6
+# ╠═d7a67e38-1f4f-4aec-a4bc-b6d5f4c5f278
+# ╠═f4e8a483-3d9a-4c3f-83d7-cc3d86e2940a
+# ╠═a6f2c2c1-3997-413f-8577-8457256877a4
+# ╠═e09c4611-6cdd-4b26-8d0a-1e4e97d38b67
+# ╠═76ad00fb-313a-4af3-a45c-62aecce6f5b1
+# ╠═ee51d4ff-5a79-4b7f-b9bc-411996a30122
+# ╠═4930a89b-f627-4f9a-8b3e-218fd3f71387
+# ╠═e70d8bf0-85c9-4f7f-b90e-0f5f8ab14b8d
+# ╠═5be38f8f-f2fa-4767-aa8a-924ccc521578
+# ╠═5943b25b-9151-4247-8833-9e25c1a93ed3
+# ╠═77a06e64-d920-4b1f-b1e2-5163137da545
+# ╠═d2ed257a-e154-4181-9daf-5bf128494e89
+# ╠═12c6520b-e280-4a5e-b9f4-a996db2c7c13
+# ╠═1df9178a-0ba1-4965-8c7a-57f619372dd2
+# ╠═d04eb8a2-a2d2-41ee-93a9-adcc094db015
+# ╠═233e91cf-c078-4139-b60b-2cb0f6d5df16
+# ╠═ea374e9c-b482-48d9-9819-8fc313928524
+# ╠═14fa8806-b25a-485c-b5ff-7ea9bb60a7ff
+# ╠═d73fffaf-25e4-4fd2-9ea7-ae863dd34109
+# ╠═e5247aa3-ee4a-4a04-bdfb-184d574e2728
+# ╠═1ff7d2c7-ec32-4758-9055-faa8170c871e
+# ╠═420345e9-d9ef-48da-97bf-83e80e22997e
+# ╠═f2a1da0b-cdc7-4e25-bdfc-44a2f9399c9d
+# ╠═3e6cfd15-379f-42f9-9c7e-7f126313a5a1
 # ╠═9365c11a-efe3-42b9-9221-b97010cf5ccc
 # ╠═80a4b0a2-fcd8-41b1-aba5-e16800c6834c
 # ╠═28199b17-3413-4cc6-983a-f0a13c05a641
 # ╠═512c09cc-f892-49e6-a119-82b762f9dad4
 # ╠═f4a6d3c3-2a20-4d91-aa0c-3129a24d59f7
-# ╠═85f03c53-337c-424f-a815-5f8206e7fabe
-# ╠═a89bd7b4-4f1c-43be-a145-4195dcb88de1
-# ╠═f3a7bee2-b967-4bcc-8da3-4be20d3e3cb8
-# ╠═673159aa-b639-4557-9b00-e776017ee4b3
-# ╠═948b7abd-c520-4643-83ee-9c51d3a0fcfa
+# ╠═c08ac38c-4149-46e8-acc2-0a6df4c59b7a
+# ╠═ae01dd3f-495d-429f-ba68-4bd933e23bde
 # ╠═3192dd4a-aa74-48d4-bc58-f5723c8da4cc
-# ╠═635a3366-af8e-4436-8d62-dd6e1e3ead6b
-# ╠═63533bd6-011a-4722-8cfd-f05dc3cd3d39
 # ╟─fb974b3c-305b-4c6c-80df-ba8a54bb2654
 # ╟─00000000-0000-0000-0000-000000000001
 # ╟─00000000-0000-0000-0000-000000000002
