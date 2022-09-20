@@ -4,6 +4,16 @@
 using Markdown
 using InteractiveUtils
 
+# This Pluto notebook uses @bind for interactivity. When running this notebook outside of Pluto, the following 'mock version' of @bind gives bound variables a default value (instead of an error).
+macro bind(def, element)
+    quote
+        local iv = try Base.loaded_modules[Base.PkgId(Base.UUID("6e696c72-6542-2067-7265-42206c756150"), "AbstractPlutoDingetjes")].Bonds.initial_value catch; b -> missing; end
+        local el = $(esc(element))
+        global $(esc(def)) = Core.applicable(Base.get, el) ? Base.get(el) : iv(el)
+        el
+    end
+end
+
 # ╔═╡ 4b2d5fa8-0824-4be4-9c7b-c773de42490b
 ## Packages
 begin
@@ -99,16 +109,32 @@ md"
 ##### Pre-flop
 "
 
-# ╔═╡ d37bd951-795f-40c6-9dbd-aae92bb486fa
-md"
-##### Flop
-"
+# ╔═╡ 0c78e61b-b5d4-4d55-8029-5e9b03c08c6a
+@bind deal Button("Deal")
+
+# ╔═╡ 9a1ab35d-2ccc-48ed-8921-6e6e0932f523
+@bind go_preflop Button("Pre-Flop")
+
+# ╔═╡ 661e5434-c3e2-443c-adc0-fb8635191226
+#sort(df_mypreflop[:,[:name, :freq, :prob]],[:freq])
+
+# ╔═╡ 41bec7a1-f82b-472f-8884-6f1e39d07b5b
+@bind go_flop Button("Flop")
+
+# ╔═╡ d8cba9cb-ea8f-4f26-b452-7445d71be762
+#sort(df_mypreflop,[:freq])
+
+# ╔═╡ 1e2acbf4-22ca-4526-855d-63c1c68fa23c
+#md"The hole-cards are $my_holecards and the three community cards are $my_commcards"
+
+# ╔═╡ abfd6318-28ea-4780-81ab-a231f0be8d89
+#sort(df_myflop,[:freq])
 
 # ╔═╡ e604032f-d10f-424f-8be9-3953c8fa5bbe
 md"
 ### Texas hold 'em poker
 
-My hand consists of all combinations av five cards taken from all combinations
+My hand consists of all possible five-card-combinations taken from all combinations
 of seven cards. These seven cards are as follows:
 
 **Pre-flop**
@@ -140,35 +166,51 @@ md"
 begin
 	sizeofset = x-> size(x)[1]
 	probofset52_5 = x-> size(x)[1]/binomial(52,5)
-	probofset50_5 = x-> size(x)[2]/binomil(50,5)
-	probofset50_3 = x-> size(x)[2]/binomial(50,3)
-	probofset47_2 = x-> size(x)[2]/binomial(47,2)
+	probofset50_5 = x-> size(x)[1]/binomial(50,5)
+	probofset50_3 = x-> size(x)[1]/binomial(50,3)
+	probofset47_2 = x-> size(x)[1]/binomial(47,2)
+end
+
+# ╔═╡ 8656693b-22a7-4eff-9b78-033e5badb5e6
+
+
+# ╔═╡ 83671b6b-42ff-40be-8e17-3d5d87addd38
+function draw_cards()
+	global my_deck = TaskA.fulldeck()
+	global my_holecards = TaskA.preflop!(my_deck)
+end
+
+# ╔═╡ 91369c74-1480-4383-b442-053ad48b074d
+let deal
+	draw_cards()
+	md"#### Hole Cards
+These are your hole-cards: $my_holecards"
 end
 
 # ╔═╡ 1dd51e47-dae8-45db-8116-2529df17563d
-begin
-	my_deck = TaskA.fulldeck()
-	my_holecards = TaskA.preflop!(my_deck)
+function draw_preflop()
+	#begin
+	#my_deck = TaskA.fulldeck()
+	#my_holecards = TaskA.preflop!(my_deck)
 	my_preflop_hands = TaskA.preflop_combinations(my_holecards, my_deck)
 	
-	df_mypreflop = DataFrame(
+	global df_mypreflop = DataFrame(
 	:name => keys(my_preflop_hands) |> collect,
 	:sets => values(my_preflop_hands) |> collect,
 	:freq => values(my_preflop_hands) |> x -> sizeofset.(x) |> collect,
-	:prob => values(my_preflop_hands) |> x -> probofset52_5.(x) |> collect);
-end;
-
-# ╔═╡ 68c782d9-e77d-456c-acac-9e0f9453ab33
-md"The hole-cards are $my_holecards"
-
-# ╔═╡ 30a68226-7646-41ae-b1ba-64609a93db49
-let go
-	md"My hole-cards are $my_holecards"
-	sort(df_mypreflop,[:freq])
+	:prob => values(my_preflop_hands) |> x -> probofset50_3.(x) |> collect);
 end
 
-# ╔═╡ d8cba9cb-ea8f-4f26-b452-7445d71be762
-sort(df_mypreflop,[:freq])
+# ╔═╡ cb582e1d-5913-46db-a055-ffa2cc307217
+let 
+	go_preflop
+	
+	draw_preflop()
+	md"#### Pre-flop
+The following ...... with $my_holecards
+
+$(sort(df_mypreflop[:,[:name, :freq, :prob]],[:freq]))"
+end
 
 # ╔═╡ 76791c9a-4e87-4500-bc54-46a094e87c51
 # Assertions
@@ -177,31 +219,35 @@ begin
 	@assert size(my_deck)[1] == 50
 end
 
-# ╔═╡ fa6dd699-251a-4d84-8684-727788e9be62
-my_holecards
-
 # ╔═╡ e70d8bf0-85c9-4f7f-b90e-0f5f8ab14b8d
 md"
 #### Flop
 "
 
 # ╔═╡ d274370d-0de1-4903-b24e-6c579c8c1e26
-begin
-	my_commcards = TaskA.flop!(my_deck)
+function draw_flop()
+	global my_commcards = TaskA.flop!(my_deck)
 	my_flophands = TaskA.flop_combinations(my_holecards, my_commcards, my_deck)
 	
-	df_myflop = DataFrame(
+	global df_myflop = DataFrame(
 	:name => keys(my_flophands) |> collect,
 	:sets => values(my_flophands) |> collect,
 	:freq => values(my_flophands) |> x -> sizeofset.(x) |> collect,
 	:prob => values(my_flophands) |> x -> probofset52_5.(x) |> collect)
-end;
+	sort(df_myflop,[:freq])
+end
 
-# ╔═╡ 1e2acbf4-22ca-4526-855d-63c1c68fa23c
-md"The hole-cards are $my_holecards and the three community cards are $my_commcards"
+# ╔═╡ d8f6c698-78e6-4533-ab92-9e74671c8d17
+let go_flop
+	draw_flop()
+	sort(df_myflop,[:freq])
+	md"#### Flop
+The three drawn community cards are $my_commcards
+	
+Your hole cards are $my_holecards
 
-# ╔═╡ abfd6318-28ea-4780-81ab-a231f0be8d89
-sort(df_myflop,[:freq])
+$(sort(df_myflop[:,[:name, :freq, :prob]],[:freq]))"
+end
 
 # ╔═╡ 363a7ee8-dee1-4e90-b647-316ab86198bb
 # Assertions
@@ -227,7 +273,7 @@ df_HANDS = DataFrame(
 	#:supersets => values(setofhands) |> collect, # problem att de är i annan ordning
 	:sets => values(HANDS) |> collect,
 	:freq => values(HANDS) |> x -> sizeofset.(x) |> collect,
-	:prob => values(HANDS) |> x -> probofset52_5.(x) |> collect
+	:prob => values(HANDS) |> x -> probofset47_2.(x) |> collect
 );
 
 # ╔═╡ 743268d0-0098-412b-aebb-c28aeec29bae
@@ -1653,19 +1699,24 @@ version = "1.4.1+0"
 # ╟─cc749c76-cc2c-4ef0-9b0b-f7c3c829968c
 # ╠═743268d0-0098-412b-aebb-c28aeec29bae
 # ╟─5aab6e98-ffc2-4178-bb52-438a236b0b7f
-# ╟─68c782d9-e77d-456c-acac-9e0f9453ab33
-# ╠═30a68226-7646-41ae-b1ba-64609a93db49
+# ╟─0c78e61b-b5d4-4d55-8029-5e9b03c08c6a
+# ╟─91369c74-1480-4383-b442-053ad48b074d
+# ╟─9a1ab35d-2ccc-48ed-8921-6e6e0932f523
+# ╠═cb582e1d-5913-46db-a055-ffa2cc307217
+# ╠═661e5434-c3e2-443c-adc0-fb8635191226
+# ╠═41bec7a1-f82b-472f-8884-6f1e39d07b5b
+# ╠═d8f6c698-78e6-4533-ab92-9e74671c8d17
 # ╠═d8cba9cb-ea8f-4f26-b452-7445d71be762
-# ╠═d37bd951-795f-40c6-9dbd-aae92bb486fa
 # ╠═1e2acbf4-22ca-4526-855d-63c1c68fa23c
 # ╠═abfd6318-28ea-4780-81ab-a231f0be8d89
-# ╟─e604032f-d10f-424f-8be9-3953c8fa5bbe
+# ╠═e604032f-d10f-424f-8be9-3953c8fa5bbe
 # ╟─abc6d425-985c-47d4-8c3c-b63b93646eba
 # ╟─f411db9f-3477-4655-ad26-77f05d714e19
 # ╠═fd4555e3-70aa-46af-b9c4-bbacef120c68
+# ╠═8656693b-22a7-4eff-9b78-033e5badb5e6
+# ╠═83671b6b-42ff-40be-8e17-3d5d87addd38
 # ╠═1dd51e47-dae8-45db-8116-2529df17563d
 # ╠═76791c9a-4e87-4500-bc54-46a094e87c51
-# ╠═fa6dd699-251a-4d84-8684-727788e9be62
 # ╠═e70d8bf0-85c9-4f7f-b90e-0f5f8ab14b8d
 # ╠═d274370d-0de1-4903-b24e-6c579c8c1e26
 # ╠═363a7ee8-dee1-4e90-b647-316ab86198bb
