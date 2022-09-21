@@ -497,22 +497,43 @@ What are the odds?
 md"
 #### Texas hold 'em poker
 
+**Starting hands**
+
+At first, the player is dealt two hole cards. The first card can be any one of $52$ cards in the deck and the second card can be any one of the remaining $51$ cards. 
+
+Since the order of the cards are not significant, the number of possible combinations of choosing 2 cards from a deck of $52$ cards will be 
+ ${52 \choose 2} = 1326$ 
+
+Of the $1,326$ combinations, there are $169$ distinct starting hands: 
+13 pocket pairs (paired hole cards),
+$13 \cdot 12 \cdot \frac{1}{2} = 78$ suited hands i.e. ${13 \choose 2}$ and 
+$78$ unsuited hands. 
+
+* Pocket pairs: $13 \cdot {4 \choose 2} = 78$
+* Suited hands: $78 \cdot  {4 \choose 1} = 312$
+* Unsuited hands: $78 \cdot {4 \choose 1} \cdot {3 \choose 1} = 936$
+
+**Pre-flop**
 The hand consisted of all possible five-card-combinations taken from combinations
 of seven cards. These seven cards were combined as follows:
 
-**Pre-flop**
-* _two randomly picked hole-cards_ drawn from a _deck of 52 cards_ and
-* _three randomly picked community-cards_ that consists of:
-    * _all combinations of five cards_ from a _deck of now 50 cards_.
+* two randomly picked hole-cards drawn from a deck of 52 cards and
+* three randomly picked community-cards that consists of:
+    * all combinations of five cards from a deck of now 50 cards.
 
 **Flop**
-* the _two randomly picked hole-cards_ that were drawn from a _deck of 52 cards_ and
-* _three randomly picked community-cards_ that consists of
-    * _three randomly picked community cards_ that are drawn from a _deck of 50 cards_ plus
-    * _all combinations of two cards_ from a _deck of now 47 cards_
+The hand consisted of all possible five-card-combinations taken from combinations
+of seven cards. These seven cards were combined as follows:
+* the two randomly picked hole-cards that were drawn from a deck of 52 cards and
+* three randomly picked community-cards that consists of
+    * three randomly picked community cards that are drawn from a deck of 50 cards plus
+    * all combinations of two cards from a deck of now 47 cards
 
 
 "
+
+# ╔═╡ 9dbc448a-a211-4f5e-8933-0428ad72bfda
+
 
 # ╔═╡ d95bed62-ed09-4fb8-9401-f8d39300ac19
 begin
@@ -847,13 +868,6 @@ function draw_preflop()
 	:Probability => values(my_preflop_hands) |> x -> probofset52_5.(x) |> collect);
 	end
 
-# ╔═╡ 14e0351b-0c8a-4fa0-9e84-93f1d6bd751d
-# Assertions
-begin
-	@assert size(my_holecards)[1] == 2
-	@assert size(my_deck)[1] == 50
-end
-
 # ╔═╡ 0833514b-381c-415e-9235-31bf8feb8943
 md"
 ###### Flop UI Functions
@@ -880,11 +894,17 @@ end
 let deal
 	draw_cards()
 	draw_preflop()
-	
+
+	# Assertions
 	@assert size(my_holecards)[1] == 2
 	@assert size(my_deck)[1] == 50
 
 	draw_flop()
+
+	# Assertions
+	@assert size(my_commcards)[1] == 3
+	@assert size(my_holecards)[1] == 2
+	@assert size(my_deck)[1] == 47
 
 	sort!(df_mystartinghands,[:Frequency])
 	#df_mystartinghands[!,:prob] = round.(df_mystartinghands[:,:prob], sigdigits = 10);
@@ -921,14 +941,6 @@ With $my_holecards as hole cards and $my_commcards as community cards.
 $(df_myflop[:,[:Hand, :Frequency, :Probability]])
 
 "
-end
-
-# ╔═╡ 5bfc6671-08c4-4671-b3ac-824ff1564987
-# Assertions
-begin
-	@assert size(my_commcards)[1] == 3
-	@assert size(my_holecards)[1] == 2
-	@assert size(my_deck)[1] == 47
 end
 
 # ╔═╡ d86ed543-4b67-4a8e-b7b7-570f2a7a5373
@@ -2076,8 +2088,9 @@ version = "1.4.1+0"
 # ╟─67e3c538-0330-461b-abfd-3271d13cf4fc
 # ╟─4afac60f-f36d-4081-8678-35c44f5492f4
 # ╟─fd254682-14e2-4d81-a0c7-6cb8247115ff
-# ╟─7e021509-2b1c-4b7a-93db-31b06e4d82b7
+# ╠═7e021509-2b1c-4b7a-93db-31b06e4d82b7
 # ╟─c2322cca-4dd1-4959-8b80-55e6f2310414
+# ╠═9dbc448a-a211-4f5e-8933-0428ad72bfda
 # ╟─d95bed62-ed09-4fb8-9401-f8d39300ac19
 # ╟─dd33dca5-d435-41bc-afa8-b8d393aed7cd
 # ╟─ace97548-f911-4727-8318-79aac3e1ef0d
@@ -2139,10 +2152,8 @@ version = "1.4.1+0"
 # ╠═f5259ee8-a89c-4037-a821-d5c22c86407b
 # ╟─1d812585-6cd3-4ef4-afc4-51098e163724
 # ╠═10d63f5d-18b7-4db4-9f25-67336b451324
-# ╠═14e0351b-0c8a-4fa0-9e84-93f1d6bd751d
 # ╟─0833514b-381c-415e-9235-31bf8feb8943
 # ╠═4c4b305a-1177-49b8-ae13-22991eea37ab
-# ╠═5bfc6671-08c4-4671-b3ac-824ff1564987
 # ╟─d86ed543-4b67-4a8e-b7b7-570f2a7a5373
 # ╠═a924adee-efc8-499a-9b0d-42721c5ec592
 # ╠═402c21c8-15f6-4c89-906a-0520de918777
