@@ -3,8 +3,8 @@
 # - Author: Vincent Ferrigan <ferrigan@kth.se>
 # - Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
 # - Assignment: Project 1
-# - Date: 2022-09-18
-# - Version: 0.7
+# - Date: 2022-09-19
+# - Version: 0.99
 
 # istället för att hasfunktionerna avläser 7 kort så kan den 
 # ta emot två vectorer. ..en hole och en community(?)
@@ -18,6 +18,7 @@ import Base.==
 
 export Card, fulldeck, preflop!, preflop_combinations, 
 flop!, flop_combinations, handcollections, prob_df, prob_df!,
+haspocketpair, hassuitedhand, hasunsuitedhand,
 hasonepair, hastwopairs, hasthreeofakind, hasstraight, 
 hasflush, hasfullhouse, hasfourofakind,
 hasstraightflush, hasroyalstraightflush, collectionofhands
@@ -60,8 +61,43 @@ function fulldeck()
     return deck
 end
 
+function hassuitedhand(cards)
+    # short-circuit pre-conditionals.
+	length(cards) == 2  ||  return false
+
+    for card ∈ cards
+		if card.suit != cards[1].suit
+			return false
+		end
+	end
+	return true
+end
+
+function hasunsuitedhand(cards)
+    # short-circuit pre-conditionals.
+	length(cards) == 2  ||  return false
+
+    for card ∈ cards
+		if card.suit != cards[1].suit
+			return true
+		end
+	end
+	return false
+end
+
+function haspocketpair(cards)
+    # short-circuit pre-conditionals.
+	length(cards) == 2  ||  return false
+
+    for card ∈ cards
+		if card.rank != cards[1].rank
+			return false
+		end
+	end
+	return true
+end
+
 function hasonepair(cards)
-    # must exclude two pairs, three of a kind and four of a kind
     # short-circuit return condition
     n = length(cards)
 	n < 2  &&  return false
@@ -163,7 +199,7 @@ function hasflush(cards)
     # short-circuit pre-conditionals.
 	length(cards) == 5  ||  return false
 
-    for card in cards
+    for card ∈ cards
 		if card.suit != cards[1].suit
 			return false
 		end
@@ -257,6 +293,13 @@ function preflop!(deck)
     return holecards
 end
 
+function startinghand_conbinations(deck)
+    startinghandcomb = combinations(deck, 2) |> collect
+    starting_hands = startinghandcollections(startinghandcomb)
+    return starting_hands
+end
+
+
 function preflop_combinations(holecards, deck)
     communitycomb = combinations(deck, 5) |> collect
     # throw two random cards
@@ -294,6 +337,26 @@ end
 
 
 # Collectionfunctions
+function startinghandcollections(handcomb)
+    predict = Dict(
+        :pocketpair => filter(x -> haspocketpair(x), handcomb),
+        :suitedhand => filter(x -> hassuitedhand(x), handcomb),
+        :unsuitedhand => filter(x -> hasunsuitedhand(x), handcomb)
+        )
+
+    PP = predict[:pocketpair]
+    SH = predict[:suitedhand]
+    USH = predict[:unsuitedhand]
+
+    dict = Dict(
+        "Pocket Pair" => PP,
+        "Suited Hand" => SH,
+		# unsuitedhand ∖ pocketpair
+        "Unsuited Hand" => setdiff(USH, PP)
+        )
+
+    return dict
+end
 
 function handcollections(handcomb)
     predict = Dict(
@@ -333,11 +396,11 @@ function handcollections(handcomb)
 		# straightflush ∖ royalstraightflush
 		"Straight Flush" => setdiff(SF, RSF),
 		"Royal Straight Flush" => RSF
-)
+        )
 	return dict
 end
 
-#df
+# DataFrames (df), not working proparly. 
 
 function prob_df!(df, handcombinations, n, k)
     sizeof = x-> size(x)[1]
@@ -361,62 +424,5 @@ function prob_df(handcombinations, n, k)
     )
     return df
 end
-# helpfunctions to mapping
-# sizeofset = x-> size(x)[1]
-# probofset52_5 = x-> size(x)[1]/binomial(52,5)
-# probofset50_5 = x-> size(x)[2]/binomil(50,5)
-# probofset50_3 = x-> size(x)[2]/binomial(50,3)
-# probofset47_2 = x-> size(x)[2]/binomial(47,2)
-
-# gamla men som jag de facto använder
-# collections
-const HOLECOMB = combinations(fulldeck(), 2) |> collect
-const COMMUNITYCOMB = combinations(fulldeck(), 3) |> collect 
-const HANDCOMB = combinations(fulldeck(), 5) |> collect 
-
-# Collectionfunctions
-function collectionofhands()
-    dict = Dict(
-        :onepair => filter(x -> hasonepair(x), HANDCOMB),
-        :twopairs => filter(x -> hastwopairs(x), HANDCOMB),
-        :threeofakind => filter(x -> hasthreeofakind(x), HANDCOMB),
-        :straight => filter(x -> hasstraight(x), HANDCOMB),
-        :flush => filter(x -> hasflush(x), HANDCOMB),
-        :fullhouse => filter(x -> hasfullhouse(x), HANDCOMB),
-        :fourofakind => filter(x -> hasfourofakind(x), HANDCOMB),
-        :straightflush => filter(x -> hasstraightflush(x), HANDCOMB),
-        :royalstraightflush => filter(x -> hasroyalstraightflush(x), HANDCOMB)
-        )
-        return dict
-end
-
-
-# tests
-# h1p = filter(x -> hasonepair(x), HANDCOMB)
-# h2p = filter(x -> hastwopairs(x), HANDCOMB)
-# h3 = filter(x -> hasthreeofakind(x), HANDCOMB)
-# hs = filter(x -> hasstraight(x), HANDCOMB)
-# hf = filter(x -> hasflush(x), HANDCOMB)
-# hfh = filter(x -> hasfullhouse(x), HANDCOMB)
-# h4 = filter(x -> hasfourofakind(x), HANDCOMB)
-# hsf = filter(x -> hasstraightflush(x), HANDCOMB)
-# hrsf = filter(x -> hasroyalstraightflush(x), HANDCOMB)
-
-# partitions(HOLECOMB)
-# deckteVst = fulldeck()
-# holetest = Vector{Card}(undef, 0)
-# push!(holetest, pop!(decktest))
-# push!(holetest, pop!(decktest))
-
-# comunitytest = Vector{Card}(undef, 0)
-# push!(comunitytest, pop!(decktest))
-# push!(comunitytest, pop!(decktest))
-# push!(comunitytest, pop!(decktest))
-
-# handtest = vcat(holetest, comunitytest)
-
-
-# parttest = partitions(handtest, 2) |> collect
-# parts = partitions(COMMUNITYCOMB)
 
 end # module
