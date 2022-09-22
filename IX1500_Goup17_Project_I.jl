@@ -25,14 +25,14 @@ begin
 	using DataFrames
 end
 
-# ╔═╡ dba3a4ed-618e-4315-b2df-75aefb58bc35
+# ╔═╡ 93d405d7-9ebb-4b38-b876-87de86cac2ca
 # TaskA.jl
 # - Julia version: 1.8.0
 # - Author: Vincent Ferrigan <ferrigan@kth.se>
 # - Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
 # - Assignment: Project 1
-# - Date: 2022-09-19
-# - Version: 0.99
+# - Date: 2022-09-22
+# - Version: 1.1
 
 # istället för att hasfunktionerna avläser 7 kort så kan den 
 # ta emot två vectorer. ..en hole och en community(?)
@@ -196,27 +196,42 @@ function hasstraight(cards)
     n = length(cards)
 	n < 5  &&  return false
 
-    rankvector = Vector{Symbol}(undef, 0)
     valuevector = Vector(undef, 0)
     rankset = Set()
     
+    # create a set of ranks. All duplicates will get thrown away
     for card ∈ cards
-        push!(rankvector, card.rank)
-        push!(valuevector, findfirst(isequal(card.rank), RANKS))
         push!(rankset, card.rank)
     end
 
     if length(rankset) < 5 return false end
+
+    for rank ∈ rankset
+        push!(valuevector, findfirst(isequal(rank), RANKS))
+    end
+
     sort!(valuevector)
 
-    start = 1
-    if :ace in rankset && :king in rankset
-        start = 2
-    end
-    for i = start:n-1
-        if valuevector[i + 1] != (valuevector[i] + 1)
-            return false
+    count = 1;
+    for i = 1:length(valuevector) - 1
+        if valuevector[i + 1] == (valuevector[i] + 1)
+            count += 1
+        else
+            count = 1
         end
+    end
+
+    if count > 4 return true end 
+            
+    if :ace in rankset && :king in rankset
+        count = 1
+        for i = length(valuevector) - 3:length(valuevector)-1
+            if valuevector[i + 1] != (valuevector[i] + 1)
+                return false
+            end
+        end
+    else
+        return false
     end
     return true
 end
@@ -225,14 +240,29 @@ end
 function hasflush(cards)
     # Flush (must exclude royal flush and straight flush)
     # short-circuit pre-conditionals.
-	length(cards) == 5  ||  return false
+	length(cards) >= 5  ||  return false
+
+    suit1 = 0
+    suit2 = 0
+    suit3 = 0
+    suit4 = 0
 
     for card ∈ cards
-		if card.suit != cards[1].suit
-			return false
+        if isequal(card.suit, SUITS[1])
+            suit1 += 1
+        elseif isequal(card.suit, SUITS[2])
+            suit2 += 1
+        elseif isequal(card.suit, SUITS[3])
+            suit3 += 1
+        elseif isequal(card.suit, SUITS[4])
+            suit4 += 1
 		end
 	end
-	return true
+
+    if suit1 >= 5 || suit2 >= 5 || suit3 >= 5 || suit4 >= 5
+        return true
+    end
+	return false
 end
 
 function hasfullhouse(cards)
@@ -287,7 +317,7 @@ function hasroyalstraightflush(cards)
         push!(rankset, card.rank)
     end
 
-   return hasstraightflush(cards) && :ace in rankset && :king in rankset
+   return hasstraightflush(cards) && :ace ∈ rankset && :king ∈ rankset && :queen ∈ rankset
 end
 
 # OM TID FINNS
@@ -329,7 +359,8 @@ end
 
 
 function preflop_combinations(holecards, deck)
-    communitycomb = combinations(deck, 5) |> collect
+    # Frågan är om det ändock vore bäst att köra (deck, 3) istället för att slänga två kort från (deck, 5)
+	communitycomb = combinations(deck, 5) |> collect
     # throw two random cards
     foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
 	foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
@@ -355,9 +386,9 @@ function flop_combinations(holecards, threecommcards, deck)
     communitycomboftwo = combinations(deck, 2) |> collect
     communitycombflop = map(x -> vcat(x, threecommcards), communitycomboftwo)
     
-    # throw two random cards away
-	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
-	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
+    ## throw two random cards away
+	#foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
+	#foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
     flophandcomb = map(x -> vcat(x, holecards), communitycombflop)
     flop_hands = handcollections(flophandcomb)
     return flop_hands
@@ -438,8 +469,8 @@ md"
 # Report Project I
 # _Combinatorics and Set Theory_
     Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
-    Date: 2022-09-19
-    Version: 0.9
+    Date: 2022-09-21
+    Version: 0.1
     Vincent Ferrigan, ferrigan@kth.se
     Martin Mellqvist Ekberg, martme@kth.se
 "
@@ -531,9 +562,6 @@ of seven cards. These seven cards were combined as follows:
 
 
 "
-
-# ╔═╡ 9dbc448a-a211-4f5e-8933-0428ad72bfda
-
 
 # ╔═╡ d95bed62-ed09-4fb8-9401-f8d39300ac19
 begin
@@ -865,7 +893,7 @@ function draw_preflop()
 	:Hand => keys(my_preflop_hands) |> collect,
 	:Sets => values(my_preflop_hands) |> collect,
 	:Frequency => values(my_preflop_hands) |> x -> sizeofset.(x) |> collect,
-	:Probability => values(my_preflop_hands) |> x -> probofset52_5.(x) |> collect);
+	:Probability => values(my_preflop_hands) |> x -> probofset50_5.(x) |> collect);
 	end
 
 # ╔═╡ 0833514b-381c-415e-9235-31bf8feb8943
@@ -882,7 +910,7 @@ function draw_flop()
 	:Hand => keys(my_flophands) |> collect,
 	:Sets => values(my_flophands) |> collect,
 	:Frequency => values(my_flophands) |> x -> sizeofset.(x) |> collect,
-	:Probability => values(my_flophands) |> x -> probofset50_5.(x) |> collect);
+	:Probability => values(my_flophands) |> x -> probofset47_2.(x) |> collect);
 end
 
 # ╔═╡ 7e021509-2b1c-4b7a-93db-31b06e4d82b7
@@ -915,6 +943,12 @@ let deal
 	sort!(df_myflop,[:Frequency])
 	#df_myflop[!,:prob] = round.(df_myflop[:,:prob], sigdigits = 10);
 
+	my_flophand = vcat(my_holecards, my_commcards)
+
+	# eventuellt
+	my_twocommunity = TaskA.preflop!(my_deck)
+	my_postflophand = vcat(my_flophand, my_twocommunity)
+
 	md"
 ##### Starting Hand
 These are your hole-cards: $(my_holecards).
@@ -924,23 +958,79 @@ $(if TaskA.haspocketpair(my_holecards)
 	elseif TaskA.hassuitedhand(my_holecards)
 		\"You've got yourself a Suited-Hand\"
 	elseif TaskA.hasunsuitedhand(my_holecards)
-		\"You've got yourself a Unsuited-Hand\"
+		\"You've got yourself an Unsuited-Hand\"
 	end)
 
 ###### The odds for that are:
 $(df_mystartinghands[:,[:Hand, :Frequency, :Probability]])
 
 ##### Pre-flop
-###### The odds with $my_holecards as hole cards:
+###### The odds with $my_holecards as hole cards
+You've got $(combine(df_mypreflop, :Frequency => sum)[1,1]) card-combinations of something and $(binomial(50,3) - combine(df_mypreflop, :Frequency => sum)[1,1]) of nothing.
+
 $(df_mypreflop[:,[:Hand, :Frequency, :Probability]])
 	
 ##### Flop
-These are your three community cards $my_commcards.
-###### The odds 
-With $my_holecards as hole cards and $my_commcards as community cards.
+The three community cards are $my_commcards and your hole-cards are $my_holecards.
+
+$(if TaskA.hasroyalstraightflush(my_flophand)
+    \"Congratulations! You've got yourself a Royal Straight Flush!\"
+elseif TaskA.hasstraightflush(my_flophand)
+    \"Congratulations! You've got yourself a Straight Flush!\"
+elseif TaskA.hasfourofakind(my_flophand)
+    \"Congratulations! You've got yourself a Four of a kind!\"
+elseif TaskA.hasfullhouse(my_flophand)
+    \"Congratulations! You've got yourself a Full House!\"
+elseif TaskA.hasflush(my_flophand)
+    \"Congratulations! You've got yourself a Flush!\"
+elseif TaskA.hasstraight(my_flophand)
+    \"Congratulations! You've got yourself a Straight!\"
+elseif TaskA.hasthreeofakind(my_flophand)
+    \"Congratulations! You've got yourself a Three of a kind!\"
+elseif TaskA.hastwopairs(my_flophand)
+    \"Congratulations! You've got yourself Two Pairs!\"
+elseif TaskA.hasonepair(my_flophand)
+    \"Congratulations! You've got yourself a pair!\"
+else
+	\"You've got nothing yet.\"
+end)
+	
+###### But what about that River? These are your odds: 
+With $my_holecards as hole cards, $my_commcards as community cards and two unknowns, you've got at least $(combine(df_myflop, :Frequency => sum)[1,1]) card combinations of something.
 $(df_myflop[:,[:Hand, :Frequency, :Probability]])
 
+##### River
+Now with $my_commcards $my_twocommunity as community-cards and your $my_holecards hole-cards
+
+$(if TaskA.hasroyalstraightflush(my_postflophand)
+    \"Congratulations! You've got yourself a Royal Straight Flush!\"
+elseif TaskA.hasstraightflush(my_postflophand)
+    \"Congratulations! You've got yourself a Straight Flush!\"
+elseif TaskA.hasfourofakind(my_postflophand)
+    \"Congratulations! You've got yourself a Four of a kind!\"
+elseif TaskA.hasfullhouse(my_postflophand)
+    \"Congratulations! You've got yourself a Full House!\"
+elseif TaskA.hasflush(my_postflophand)
+    \"Congratulations! You've got yourself a Flush!\"
+elseif TaskA.hasstraight(my_postflophand)
+    \"Congratulations! You've got yourself a Straight!\"
+elseif TaskA.hasthreeofakind(my_postflophand)
+    \"Congratulations! You've got yourself a Three of a kind!\"
+elseif TaskA.hastwopairs(my_postflophand)
+    \"Congratulations! You've got yourself Two Pairs!\"
+elseif TaskA.hasonepair(my_postflophand)
+    \"Congratulations! You've got yourself a pair!\"
+else
+	\"You've got nothing yet.\"
+end)
+	
+	
 "
+	
+	#$(combine(df_myflop, :Frequency => sum)[1,1]) 5-card combinations of something
+	
+	#and $(binomial(52,7) - combine(df_myflop, :Frequency => sum)[1,1]) of nothing.
+
 end
 
 # ╔═╡ d86ed543-4b67-4a8e-b7b7-570f2a7a5373
@@ -950,7 +1040,7 @@ md"
 # ╔═╡ a924adee-efc8-499a-9b0d-42721c5ec592
 function assertpokerprob()
 	global HANDCOMBINATIONS = combinations(TaskA.fulldeck(), 5) |> collect
-	HANDS = TaskA.handcollections(HANDCOMBINATIONS);
+	global HANDS = TaskA.handcollections(HANDCOMBINATIONS);
 	
 	global df_HANDS = DataFrame(
 	#:id => keys(setofhands) |> collect |> x -> sort(x, by = y->[2]),
@@ -2088,9 +2178,8 @@ version = "1.4.1+0"
 # ╟─67e3c538-0330-461b-abfd-3271d13cf4fc
 # ╟─4afac60f-f36d-4081-8678-35c44f5492f4
 # ╟─fd254682-14e2-4d81-a0c7-6cb8247115ff
-# ╠═7e021509-2b1c-4b7a-93db-31b06e4d82b7
+# ╟─7e021509-2b1c-4b7a-93db-31b06e4d82b7
 # ╟─c2322cca-4dd1-4959-8b80-55e6f2310414
-# ╠═9dbc448a-a211-4f5e-8933-0428ad72bfda
 # ╟─d95bed62-ed09-4fb8-9401-f8d39300ac19
 # ╟─dd33dca5-d435-41bc-afa8-b8d393aed7cd
 # ╟─ace97548-f911-4727-8318-79aac3e1ef0d
@@ -2144,7 +2233,7 @@ version = "1.4.1+0"
 # ╟─31f4e3df-23d0-44ff-b18e-52bc496644c3
 # ╟─f38017a5-8b3f-4980-9cff-32922dcf92d4
 # ╟─f0456ddf-eadd-40ec-aab7-8c2b5267fed7
-# ╠═dba3a4ed-618e-4315-b2df-75aefb58bc35
+# ╠═93d405d7-9ebb-4b38-b876-87de86cac2ca
 # ╟─755ef7c2-8518-4c21-aa2d-8790f627b188
 # ╟─bb696b16-75c6-476e-bb5a-9c7db29e7079
 # ╠═1bede597-1daa-4150-b18f-646eba16d990

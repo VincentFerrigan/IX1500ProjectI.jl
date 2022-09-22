@@ -3,8 +3,8 @@
 # - Author: Vincent Ferrigan <ferrigan@kth.se>
 # - Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
 # - Assignment: Project 1
-# - Date: 2022-09-19
-# - Version: 0.99
+# - Date: 2022-09-22
+# - Version: 1.1
 
 # istället för att hasfunktionerna avläser 7 kort så kan den 
 # ta emot två vectorer. ..en hole och en community(?)
@@ -168,27 +168,42 @@ function hasstraight(cards)
     n = length(cards)
 	n < 5  &&  return false
 
-    rankvector = Vector{Symbol}(undef, 0)
     valuevector = Vector(undef, 0)
     rankset = Set()
     
+    # create a set of ranks. All duplicates will get thrown away
     for card ∈ cards
-        push!(rankvector, card.rank)
-        push!(valuevector, findfirst(isequal(card.rank), RANKS))
         push!(rankset, card.rank)
     end
 
     if length(rankset) < 5 return false end
+
+    for rank ∈ rankset
+        push!(valuevector, findfirst(isequal(rank), RANKS))
+    end
+
     sort!(valuevector)
 
-    start = 1
-    if :ace in rankset && :king in rankset
-        start = 2
-    end
-    for i = start:n-1
-        if valuevector[i + 1] != (valuevector[i] + 1)
-            return false
+    count = 1;
+    for i = 1:length(valuevector) - 1
+        if valuevector[i + 1] == (valuevector[i] + 1)
+            count += 1
+        else
+            count = 1
         end
+    end
+
+    if count > 4 return true end 
+            
+    if :ace in rankset && :king in rankset
+        count = 1
+        for i = length(valuevector) - 3:length(valuevector)-1
+            if valuevector[i + 1] != (valuevector[i] + 1)
+                return false
+            end
+        end
+    else
+        return false
     end
     return true
 end
@@ -197,14 +212,29 @@ end
 function hasflush(cards)
     # Flush (must exclude royal flush and straight flush)
     # short-circuit pre-conditionals.
-	length(cards) == 5  ||  return false
+	length(cards) >= 5  ||  return false
+
+    suit1 = 0
+    suit2 = 0
+    suit3 = 0
+    suit4 = 0
 
     for card ∈ cards
-		if card.suit != cards[1].suit
-			return false
+        if isequal(card.suit, SUITS[1])
+            suit1 += 1
+        elseif isequal(card.suit, SUITS[2])
+            suit2 += 1
+        elseif isequal(card.suit, SUITS[3])
+            suit3 += 1
+        elseif isequal(card.suit, SUITS[4])
+            suit4 += 1
 		end
 	end
-	return true
+
+    if suit1 >= 5 || suit2 >= 5 || suit3 >= 5 || suit4 >= 5
+        return true
+    end
+	return false
 end
 
 function hasfullhouse(cards)
@@ -259,7 +289,7 @@ function hasroyalstraightflush(cards)
         push!(rankset, card.rank)
     end
 
-   return hasstraightflush(cards) && :ace in rankset && :king in rankset
+   return hasstraightflush(cards) && :ace ∈ rankset && :king ∈ rankset && :queen ∈ rankset
 end
 
 # OM TID FINNS
@@ -301,7 +331,8 @@ end
 
 
 function preflop_combinations(holecards, deck)
-    communitycomb = combinations(deck, 5) |> collect
+    # Frågan är om det ändock vore bäst att köra (deck, 3) istället för att slänga två kort från (deck, 5)
+	communitycomb = combinations(deck, 5) |> collect
     # throw two random cards
     foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
 	foreach(x -> popat!(x, rand(1:size(communitycomb[1])[1])), communitycomb)
@@ -330,6 +361,7 @@ function flop_combinations(holecards, threecommcards, deck)
     # throw two random cards away
 	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
 	foreach(x -> popat!(x, rand(1:size(communitycombflop[1])[1])), communitycombflop)
+    
     flophandcomb = map(x -> vcat(x, holecards), communitycombflop)
     flop_hands = handcollections(flophandcomb)
     return flop_hands
@@ -398,31 +430,6 @@ function handcollections(handcomb)
 		"Royal Straight Flush" => RSF
         )
 	return dict
-end
-
-# DataFrames (df), not working proparly. 
-
-function prob_df!(df, handcombinations, n, k)
-    sizeof = x-> size(x)[1]
-    probof = x-> size(x)[1]/binomial(n,k)
-    
-    df.:name => keys(handcombinations) |> collect
-	df.:sets => values(handcombinations) |> collect
-	df.:freq => values(handcombinations) |> x -> sizeof.(x) |> collect
-	df.:prob => values(handcombinations) |> x -> probof.(x) |> collect
-
-end
-function prob_df(handcombinations, n, k)
-    sizeof = x-> size(x)[1]
-    probof = x-> size(x)[1]/binomial(n,k)
-    
-    df = DataFrame(
-	:name => keys(handcombinations) |> collect,
-	:sets => values(handcombinations) |> collect,
-	:freq => values(handcombinations) |> x -> sizeof.(x) |> collect,
-	:prob => values(handcombinations) |> x -> probof.(x) |> collect
-    )
-    return df
 end
 
 end # module
