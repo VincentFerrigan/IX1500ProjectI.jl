@@ -62,28 +62,6 @@ group, exceeds 50%, when the group consists of only 23 people.
   probability for different values of $N$ . Draw graphs and compare to the
   calculated versions above. Conclusions?
 
-
-# PROJECT-stuff _(To be disabled from the report)_
-## Open Issues
-### Pluto
-- How do I add non-code? 
-*Well, just use Markdown with md\" ...\"*
-
-- ~~How do I add mathematical nonation?~~
-*Use LaTeX notation. Ex: $a = {x /over 1}$*
-
-- How do I add keybindings?
-- How do I spellcheck with LT?
-- **Issues with including module. Temp fix has been to import code from TaskB.jl**
-
-### Task A
-
-### Task B
-- Cleanup
-
-### Other
-- Has all the "project stuff" been removed from the notebook?
-
 ## Info & tutorials
 
 ### Regular Expressions in Julia
