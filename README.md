@@ -62,7 +62,7 @@ group, exceeds 50%, when the group consists of only 23 people.
   probability for different values of $N$ . Draw graphs and compare to the
   calculated versions above. Conclusions?
   
-  #### Result
+#### Result
 
 To begin with we have to make a few assumptions:
 
