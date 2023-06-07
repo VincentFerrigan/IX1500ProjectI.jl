@@ -1,6 +1,11 @@
 # Project I
+
 This project is based on an assignment for a course in **'Discrete Mathematics'** 
 given at *KTH Royal Institute of Technology in Stockholm*.
+
+# _Combinatorics and Set Theory_
+    Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
+    Date: 2022-09-22
 
 Instead of Mathematica, the **Pluto Notebook** was used to create 
 an interactive notebook.
