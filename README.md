@@ -1,5 +1,4 @@
-# IX1500ProjectI
-# Project II
+# Project I
 This project is based on an assignment for a course in **'Discrete Mathematics'** 
 given at *KTH Royal Institute of Technology in Stockholm*.
 
