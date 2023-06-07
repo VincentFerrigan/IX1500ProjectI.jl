@@ -3,7 +3,7 @@
 This project is based on an assignment for a course in **'Discrete Mathematics'** 
 given at *KTH Royal Institute of Technology in Stockholm*.
 
-# _Combinatorics and Set Theory_
+### _Combinatorics and Set Theory_
     Course code: KTH/ICT:IX1500 - Discrete Mathematics, ht22 
     Date: 2022-09-22
 
