@@ -61,6 +61,45 @@ group, exceeds 50%, when the group consists of only 23 people.
 * Simulate the birthday paradox repeatedly and calculate the average
   probability for different values of $N$ . Draw graphs and compare to the
   calculated versions above. Conclusions?
+  
+  #### Result
+
+To begin with we have to make a few assumptions:
+
+1. There are *always* 365 days in a year (i.e. we ignore leap years)
+2. Every birthday is *equally* likely
+3. There are *no dependencies* between birthdays (we discount twins, triplets etc)
+4. The set of people $N$ is *completely random*
+
+##### N people in the room
+
+To begin with we have to somehow derive a formula for calculating the probability that there is a match between the birthdays of two people out of the $N$ people in the room.
+
+If we can caluclate the probability of no two people with matching birthdays existing, then we can subtract that from $1$ to get the probability of two people sharing a birthday.
+
+Using combinatorics we can calculate the probability of two people not sharing a birthday by first calculating the number of outcomes where no two people share a birthday $A$. We can then calculate the total number of possible outcomes $B$.
+
+This gives us:
+
+$P = {A \over B}$
+
+The number of outcomes, where no two people share a birthday, is given by the number of permutations without repetition:
+
+${365!\over (365-N)!}$
+
+The total number of outcomes is given by the the number of permutations with repetition:
+
+$365^N$
+
+Combining these gives:
+
+${{365!\over (365-N)!} \over 365^N} = {365!\over 365^N(365-N)!}$
+
+Subtract from 1:
+
+$P(N) = 1 - {365!\over 365^N(365-N)!}$
+
+Calculating for N=23 give us:
 
 ## Info & tutorials
 
